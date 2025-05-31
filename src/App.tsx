@@ -1,9 +1,9 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
-import {SplashScreen} from './Screens';
+import {Signin, SplashScreen} from './Screens';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -12,11 +12,12 @@ const App = () => {
   const AuthStack = () => {
     return (
       <Stack.Navigator
-        initialRouteName="Splash"
+        initialRouteName="Signin"
         screenOptions={{
           headerShown: false,
         }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Signin" component={Signin} />
       </Stack.Navigator>
     );
   };

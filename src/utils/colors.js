@@ -3,6 +3,7 @@ const colors = {
   secondary: '#FFFFFF',
   error: '#FF0000',
   primaryBackground: '#DBE0E5',
+  inputBackground: '#61758A',
 };
 
 export {colors};

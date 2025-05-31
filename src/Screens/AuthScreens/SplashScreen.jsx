@@ -3,9 +3,13 @@ import React, {useEffect, useRef} from 'react';
 import Layout from '../Layout/Layout';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
+import {useNavigation} from '@react-navigation/native';
 
 const SplashScreen = () => {
   const progressAnim = useRef(new Animated.Value(0)).current;
+
+  // Navigation
+  const navigation = useNavigation();
 
   useEffect(() => {
     Animated.timing(progressAnim, {
@@ -14,8 +18,9 @@ const SplashScreen = () => {
       easing: Easing.linear,
       useNativeDriver: false,
     }).start();
+
     setTimeout(() => {
-      console.log('');
+      navigation.navigate('Signin');
     }, 1500);
   }, []);
 
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
   taglineText: {
     color: '#000',
     fontSize: 24,
-    fontWeight: fonts.thin,
+    fontFamily: fonts.semibold,
     marginTop: 20,
   },
   progressContainer: {
@@ -98,12 +103,12 @@ const styles = StyleSheet.create({
   billTxt: {
     color: '#000',
     fontSize: 14,
-    fontWeight: fonts.thin,
+    fontFamily: fonts.medium,
   },
   bottomText: {
     color: '#000',
     fontSize: 14,
-    fontWeight: fonts.semibold,
+    fontFamily: fonts.semibold,
   },
 });
 
