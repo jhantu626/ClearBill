@@ -11,8 +11,27 @@ import Layout from '../Layout/Layout';
 import {DefaultInput, SecondaryHeader} from '../../Components';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
-
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+GoogleSignin.configure({
+  webClientId:
+    '463145801056-p5vlj2ncocfa1lh75tk5mdgquimbo4g1.apps.googleusercontent.com',
+  // scopes: ['https://www.googleapis.com/auth/drive.readonly', 'email'],
+  scopes: ['email'],
+  forceCodeForRefreshToken: false,
+  iosClientId:
+    '463145801056-dnf3ui4s91fq3jgj76o9a367pf8hcner.apps.googleusercontent.com',
+  // 463145801056-84vo0914imkugs2a0dorkts84iqi2ni8.apps.googleusercontent.com -- android
+});
 const Signin = () => {
+  const googleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      console.info('response ', response?.data?.user?.email);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Layout>
       <SecondaryHeader title="Signin" />
@@ -32,6 +51,7 @@ const Signin = () => {
             </TouchableOpacity>
             <Text style={styles.orText}>--or--</Text>
             <TouchableOpacity
+              onPress={googleSignIn}
               style={[
                 styles.btnContainer,
                 {
