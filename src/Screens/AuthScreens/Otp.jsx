@@ -1,21 +1,100 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Layout from '../Layout/Layout';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {TextInput} from 'react-native-gesture-handler';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
+import {useRoute} from '@react-navigation/native';
+import {authService} from '../../Services/AuthService';
+import {useAuth} from '../../Context/AuthContext';
 
 const Otp = () => {
+  const {login} = useAuth();
+
   const [otpText, setOtpText] = useState(['', '', '', '']);
   const inputRefs = useRef([]);
 
-  const [timer, setTimer] = useState(5);
+  // Loading State
+  const [otpResendLoading, setOtpResendLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const route = useRoute();
+  console.log('route', route?.params?.email);
+
+  const [timer, setTimer] = useState(120);
 
   const formatTime = timeInSeconds => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = timeInSeconds % 60;
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  const verifyOtp = async () => {
+    console.log('otpText', otpText.join(''));
+    setIsLoading(true);
+    try {
+      const isCompleteOtp = otpText.every(item => item !== '');
+      if (isCompleteOtp) {
+        const complateOtp = otpText.join('');
+        const data = await authService.verifyOtp({
+          email: route?.params?.email,
+          otp: complateOtp,
+        });
+        console.log(data);
+
+        if (data.status) {
+          await login(data.token);
+        } else {
+          ToastAndroid.showWithGravity(
+            'Invalid OTP',
+            ToastAndroid.SHORT,
+            ToastAndroid.TOP,
+          );
+          setOtpText(['', '', '', '']);
+          inputRefs.current[0].focus();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const otpVarification = async otp => {
+    console.log('otpverification ', otp);
+    setIsLoading(true);
+    try {
+      const complateOtp = otpText.join('');
+      const data = await authService.verifyOtp({
+        email: route?.params?.email,
+        otp: otp,
+      });
+      console.log(data);
+
+      if (data.status) {
+        await login(data.token);
+      } else {
+        ToastAndroid.showWithGravity(
+          'Invalid OTP',
+          ToastAndroid.SHORT,
+          ToastAndroid.TOP,
+        );
+        setOtpText(['', '', '', '']);
+        inputRefs.current[0].focus();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChangeText = (text, index) => {
@@ -34,7 +113,7 @@ const Otp = () => {
 
     // Check if all fields are filled
     if (newOtp.every(item => item !== '')) {
-      console.log('OTP is complete:', newOtp.join(''));
+      otpVarification(newOtp.join(''));
     }
   };
 
@@ -52,6 +131,26 @@ const Otp = () => {
       return () => clearInterval(interval); // Cleanup on unmount or timer change
     }
   }, [timer]);
+
+  const resend = async () => {
+    setOtpResendLoading(true);
+    try {
+      const data = await authService.login({email: route?.params?.email});
+      if (data.status) {
+        setTimer(120);
+        ToastAndroid.showWithGravity(
+          'Resend OTP successfully',
+          ToastAndroid.SHORT,
+          ToastAndroid.TOP,
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setOtpResendLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <View style={styles.headerCOntainer}>
@@ -79,6 +178,7 @@ const Otp = () => {
                 ref={ref => (inputRefs.current[index] = ref)}
                 autoFocus={index === 0}
                 selectionColor={colors.primary}
+                editable={timer > 0}
               />
             ))}
           </View>
@@ -87,17 +187,28 @@ const Otp = () => {
               Resend code in {timer > 0 && formatTime(timer)}
             </Text>
             {timer === 0 && (
-              <TouchableOpacity>
-                <Text style={[styles.resetText, {fontFamily: fonts.bold}]}>
-                  {' '}
-                  Resend
-                </Text>
+              <TouchableOpacity onPress={resend}>
+                {otpResendLoading ? (
+                  <ActivityIndicator size={'small'} color={'#000'} />
+                ) : (
+                  <Text style={[styles.resetText, {fontFamily: fonts.bold}]}>
+                    {' '}
+                    Resend
+                  </Text>
+                )}
               </TouchableOpacity>
             )}
           </View>
         </View>
-        <TouchableOpacity style={styles.btnContainer}>
-          <Text style={styles.btnText}>Verify</Text>
+        <TouchableOpacity
+          style={styles.btnContainer}
+          disabled={isLoading}
+          onPress={verifyOtp}>
+          {isLoading ? (
+            <ActivityIndicator size={'large'} color={'#fff'} />
+          ) : (
+            <Text style={styles.btnText}>Verify</Text>
+          )}
         </TouchableOpacity>
       </View>
     </Layout>

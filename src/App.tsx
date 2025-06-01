@@ -3,7 +3,8 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
-import {Otp, Signin, SplashScreen} from './Screens';
+import {Home, Otp, Signin, SplashScreen} from './Screens';
+import AuthProvider, {useAuth} from './Context/AuthContext';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -12,7 +13,7 @@ const App = () => {
   const AuthStack = () => {
     return (
       <Stack.Navigator
-        initialRouteName="Splash"
+        initialRouteName="Signin"
         screenOptions={{
           headerShown: false,
         }}>
@@ -23,10 +24,27 @@ const App = () => {
     );
   };
 
+  const AppStack = () => {
+    return (
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={Home} />
+      </Stack.Navigator>
+    );
+  };
+
+  const AppNav = () => {
+    const {authToken} = useAuth();
+    return (
+      <NavigationContainer>
+        {authToken ? <AppStack /> : <AuthStack />}
+      </NavigationContainer>
+    );
+  };
+
   return (
-    <NavigationContainer>
-      <AuthStack />
-    </NavigationContainer>
+    <AuthProvider>
+      <AppNav />
+    </AuthProvider>
   );
 };
 

@@ -1,17 +1,23 @@
 import {
+  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
+  TextInput,
   Touchable,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Layout from '../Layout/Layout';
 import {DefaultInput, SecondaryHeader} from '../../Components';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {authService} from '../../Services/AuthService';
+import {useAuth} from '../../Context/AuthContext';
+import {verifyEmail} from '../../utils/validations';
+import {useNavigation} from '@react-navigation/native';
 GoogleSignin.configure({
   webClientId:
     '463145801056-p5vlj2ncocfa1lh75tk5mdgquimbo4g1.apps.googleusercontent.com',
@@ -23,34 +29,110 @@ GoogleSignin.configure({
   // 463145801056-84vo0914imkugs2a0dorkts84iqi2ni8.apps.googleusercontent.com -- android
 });
 const Signin = () => {
+  const {login} = useAuth();
+  const navigation = useNavigation();
+
+  // State Variables
+  const [email, setEmail] = useState('');
+
+  const [isLoading, setIsLoding] = useState(false);
+  const [googleLogin, setGoogleLogin] = useState(false);
+
+  // Error State
+  const [error, setError] = useState('');
+
+  const signInWithGoogle = async ({email}) => {
+    setGoogleLogin(true);
+    try {
+      const data = await authService.loginWithGoogle({
+        email: email,
+      });
+      console.info('data ', data);
+      if (data.status) {
+        await login(data.token);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGoogleLogin(false);
+    }
+  };
   const googleSignIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-      console.info('response ', response?.data?.user?.email);
+      console.info('response ');
+      console.log(response);
+      const email = response?.data?.user?.email;
+      signInWithGoogle({email});
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (!verifyEmail(email) && email !== '') {
+      setError('Enter a valid email');
+    } else {
+      setError('');
+    }
+  }, [email]);
+
+  const handleContinue = async () => {
+    setIsLoding(true);
+    try {
+      if (!verifyEmail(email) || email === '') {
+        setError('Enter a valid email');
+        return;
+      } else {
+        setError('');
+      }
+
+      const data = await authService.login({email: email});
+      console.log('Data ', data);
+
+      if (data.status) {
+        navigation.navigate('Otp', {email: email});
+      } else {
+        setError('Something went wrong');
+      }
+    } catch (error) {
+    } finally {
+      setIsLoding(false);
+    }
+  };
+
   return (
     <Layout>
       <SecondaryHeader title="Signin" />
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <Text style={styles.titleText}>Sign in to continue</Text>
-          <DefaultInput />
+          <DefaultInput
+            value={email}
+            setValue={setEmail}
+            keyboardType="email-address"
+          />
+          {error && <Text style={styles.errorText}>{error}</Text>}
           <View style={styles.btnParentContainer}>
             <TouchableOpacity
+              onPress={handleContinue}
+              disabled={isLoading}
               style={[
                 styles.btnContainer,
                 {
                   backgroundColor: colors.primary,
                 },
               ]}>
-              <Text style={styles.btnText}>Continue</Text>
+              {isLoading ? (
+                <ActivityIndicator size={'large'} color={'#fff'} />
+              ) : (
+                <Text style={styles.btnText}>Continue</Text>
+              )}
             </TouchableOpacity>
             <Text style={styles.orText}>--or--</Text>
             <TouchableOpacity
+              disabled={googleLogin}
               onPress={googleSignIn}
               style={[
                 styles.btnContainer,
@@ -63,19 +145,25 @@ const Signin = () => {
                   justifyContent: 'center',
                 },
               ]}>
-              <Image
-                style={styles.googleImage}
-                source={require('./../../../assets/images/google.webp')}
-              />
-              <Text
-                style={[
-                  styles.btnText,
-                  {
-                    color: '#000',
-                  },
-                ]}>
-                Signin with Google
-              </Text>
+              {googleLogin ? (
+                <ActivityIndicator size={'large'} color={colors.primary} />
+              ) : (
+                <>
+                  <Image
+                    style={styles.googleImage}
+                    source={require('./../../../assets/images/google.webp')}
+                  />
+                  <Text
+                    style={[
+                      styles.btnText,
+                      {
+                        color: '#000',
+                      },
+                    ]}>
+                    Signin with Google
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -137,6 +225,12 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     textAlign: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    fontFamily: fonts.light,
+    marginTop: -15,
   },
 });
 
