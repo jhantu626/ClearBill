@@ -20,7 +20,7 @@ const SplashScreen = () => {
     }).start();
 
     setTimeout(() => {
-      navigation.navigate('Signin');
+      navigation.replace('Signin');
     }, 1500);
   }, []);
 

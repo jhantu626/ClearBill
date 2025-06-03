@@ -2,6 +2,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-gesture-handler';
 import {colors} from '../../utils/colors';
+import { fonts } from '../../utils/fonts';
 
 const DefaultInput = ({
   value,
@@ -38,6 +39,8 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     height: '100%',
+    fontSize: 16,
+    fontFamily: fonts.medium
   },
 });
 
