@@ -1,10 +1,23 @@
-import {StyleSheet} from 'react-native';
+import {Settings, StyleSheet} from 'react-native';
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
-import {Home, Otp, Signin, SplashScreen} from './Screens';
+import {
+  Home,
+  Invoice,
+  Otp,
+  Products,
+  Setting,
+  Signin,
+  SplashScreen,
+} from './Screens';
 import AuthProvider, {useAuth} from './Context/AuthContext';
+import {colors} from './utils/colors';
+import Octicons from 'react-native-vector-icons/Octicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {fonts} from './utils/fonts';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -27,9 +40,56 @@ const App = () => {
 
   const AppStack = () => {
     return (
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} />
-      </Stack.Navigator>
+      <Tab.Navigator
+        initialRouteName="Home"
+        backBehavior="history"
+        screenOptions={{
+          headerShown: false,
+          animation: 'shift',
+          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: colors.primary,
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontFamily: fonts.medium,
+          },
+        }}>
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            tabBarIcon: ({color}) => (
+              <Octicons name="home" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Invoice"
+          component={Invoice}
+          options={{
+            tabBarIcon: ({color}) => (
+              <Ionicons name="receipt-outline" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Product"
+          component={Products}
+          options={{
+            tabBarIcon: ({color}) => (
+              <AntDesign name="inbox" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Setting"
+          component={Setting}
+          options={{
+            tabBarIcon: ({color}) => (
+              <AntDesign name="setting" size={24} color={color} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     );
   };
 

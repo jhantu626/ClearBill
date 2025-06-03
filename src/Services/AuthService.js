@@ -1,8 +1,10 @@
 import axios from 'axios';
+// import { API_URL } from '@env';
 
 class AuthService {
   constructor() {
     this.baseUrl = process.env.API_URL;
+    // this.baseUrl = API_URL;
   }
 
   // Loging with google -- (without otp)
