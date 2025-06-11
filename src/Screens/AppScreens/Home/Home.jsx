@@ -12,6 +12,8 @@ import Layout from '../../Layout/Layout';
 import {ChartBar, SecondaryHeader} from '../../../Components';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
+import { FlatList } from 'react-native-gesture-handler';
+import InvoiceCard from '../../../Components/Cards/InvoiceCard';
 
 const Home = () => {
   const options = ['Day', 'Week', 'Monthly'];
@@ -26,7 +28,7 @@ const Home = () => {
         title="Dashboard"
         isNotification={true}
       />
-      <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
+      <ScrollView style={{flex: 1}} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.topView}>
           <Text style={styles.headerText}>Sales Overview</Text>
           <View style={styles.btnSelectContainer}>
@@ -63,9 +65,24 @@ const Home = () => {
                 +15%
               </Text>
             </View>
-            <ChartBar/>
+            <ChartBar />
           </View>
         </View>
+        <View style={styles.middleBtnContainer}>
+          <TouchableOpacity
+            style={[styles.middleBtn, {backgroundColor: colors.primary}]}>
+            <Text style={styles.middleBtnText}>Create Invoice</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.middleBtn,
+              {backgroundColor: colors.inputBackground+'40'},
+            ]}>
+            <Text style={[styles.middleBtnText,{color: '#000'}]}>View Reports</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.invoiceText}>Recent Invoices</Text>
+        {[0,1,2,3,4,5,6,7,8].map((item,index)=><InvoiceCard key={index}/>)}
       </ScrollView>
     </Layout>
   );
@@ -73,7 +90,7 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     paddingHorizontal: 20,
     paddingTop: 10,
   },
@@ -108,6 +125,32 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     color: colors.inputBackground,
   },
+  middleBtnContainer: {
+    height: 45,
+    width: '100%',
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  middleBtn: {
+    width: '50%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10
+  },
+  middleBtnText: {
+    fontSize: 14,
+    fontFamily: fonts.bold,
+    color: '#fff',
+    letterSpacing: 1
+  },
+  invoiceText:{
+    fontSize: 18,
+    fontFamily: fonts.bold
+  }
 });
 
 export default Home;
