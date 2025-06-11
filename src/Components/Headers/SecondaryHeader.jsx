@@ -9,7 +9,9 @@ import {fonts} from '../../utils/fonts';
 const SecondaryHeader = ({
   navigation = 'simple',
   title = '',
+  isNotification = false,
   isAddbtn = false,
+  addBtnFunction = () => {},
 }) => {
   const toNavigation = useNavigation();
   return (
@@ -31,9 +33,15 @@ const SecondaryHeader = ({
         </TouchableOpacity>
       )}
       <Text style={styles.titleText}>{title}</Text>
-      <TouchableOpacity>
-        {isAddbtn && <Ionicons name="add-outline" size={24} color="black" />}
-      </TouchableOpacity>
+      {isNotification ? (
+        <TouchableOpacity onPress={addBtnFunction}>
+          <Ionicons name="notifications-outline" size={24} color="black" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={addBtnFunction}>
+          {isAddbtn && <Ionicons name="add-outline" size={24} color="black" />}
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

@@ -1,14 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React from 'react';
+import Layout from '../../Layout/Layout';
+import {useAuth} from '../../../Context/AuthContext';
 
 const Invoice = () => {
+  const {logout} = useAuth();
   return (
-    <View>
-      <Text>Invoice</Text>
-    </View>
-  )
-}
+    <Layout>
+      <TouchableOpacity onPress={logout}>
+        <Text>Logout</Text>
+      </TouchableOpacity>
+    </Layout>
+  );
+};
 
-export default Invoice
+export default Invoice;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

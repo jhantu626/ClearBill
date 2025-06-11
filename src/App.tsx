@@ -48,6 +48,9 @@ const App = () => {
           animation: 'shift',
           tabBarInactiveTintColor: 'gray',
           tabBarActiveTintColor: colors.primary,
+          tabBarStyle: {
+            paddingVertical: 20,
+          },
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: fonts.medium,

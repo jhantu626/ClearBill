@@ -4,4 +4,7 @@ import SecondaryHeader from './Headers/SecondaryHeader';
 // Inputs
 import DefaultInput from './Input/DefaultInput';
 
-export {SecondaryHeader, DefaultInput};
+// Charts
+import ChartBar from './charts/ChartBar';
+
+export {SecondaryHeader, DefaultInput, ChartBar};
