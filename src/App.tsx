@@ -41,7 +41,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName="Product"
         backBehavior="history"
         screenOptions={{
           headerShown: false,

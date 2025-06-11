@@ -9,17 +9,21 @@ import React from 'react';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
 
-const InvoiceCard = ({key}) => {
+const InvoiceCard = ({key, isMoney = true}) => {
   return (
-    <View style={styles.container} key={key+" Invoice"}>
+    <View style={styles.container} key={key + ' Invoice'}>
       <View style={styles.leftContainer}>
         <Text style={styles.nameText}>Emily Carter</Text>
         <Text style={styles.invText}>Invoice #12345</Text>
       </View>
       <View style={styles.rightContainer}>
-        <TouchableOpacity style={styles.viewBtn}>
-          <Text style={styles.viewText}>View</Text>
-        </TouchableOpacity>
+        {isMoney ? (
+          <Text style={styles.moneyText}>₹1,000.00</Text>
+        ) : (
+          <TouchableOpacity style={styles.viewBtn}>
+            <Text style={styles.viewText}>View</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -56,6 +60,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.medium,
   },
+  moneyText:{
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    color: colors.inputBackground+"90"
+  }
 });
 
 export default InvoiceCard;

@@ -12,7 +12,7 @@ import Layout from '../../Layout/Layout';
 import {ChartBar, SecondaryHeader} from '../../../Components';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 import InvoiceCard from '../../../Components/Cards/InvoiceCard';
 
 const Home = () => {
@@ -28,7 +28,10 @@ const Home = () => {
         title="Dashboard"
         isNotification={true}
       />
-      <ScrollView style={{flex: 1}} contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.topView}>
           <Text style={styles.headerText}>Sales Overview</Text>
           <View style={styles.btnSelectContainer}>
@@ -76,13 +79,17 @@ const Home = () => {
           <TouchableOpacity
             style={[
               styles.middleBtn,
-              {backgroundColor: colors.inputBackground+'40'},
+              {backgroundColor: colors.inputBackground + '40'},
             ]}>
-            <Text style={[styles.middleBtnText,{color: '#000'}]}>View Reports</Text>
+            <Text style={[styles.middleBtnText, {color: '#000'}]}>
+              View Reports
+            </Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.invoiceText}>Recent Invoices</Text>
-        {[0,1,2,3,4,5,6,7,8].map((item,index)=><InvoiceCard key={index}/>)}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+          <InvoiceCard key={index} isMoney={false}/>
+        ))}
       </ScrollView>
     </Layout>
   );
@@ -139,18 +146,18 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10
+    borderRadius: 10,
   },
   middleBtnText: {
     fontSize: 14,
     fontFamily: fonts.bold,
     color: '#fff',
-    letterSpacing: 1
+    letterSpacing: 1,
   },
-  invoiceText:{
+  invoiceText: {
     fontSize: 18,
-    fontFamily: fonts.bold
-  }
+    fontFamily: fonts.bold,
+  },
 });
 
 export default Home;

@@ -4,6 +4,7 @@ const colors = {
   error: '#FF0000',
   primaryBackground: '#DBE0E5',
   inputBackground: '#61758A',
+  itemBackgrounds: '#F0F2F5',
 };
 
 export {colors};
