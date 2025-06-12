@@ -16,8 +16,11 @@ import {
   SecondaryHeader,
 } from '../../../Components';
 import {fonts} from '../../../utils/fonts';
+import {useNavigation} from '@react-navigation/native';
 
 const Products = () => {
+  const navigation = useNavigation();
+
   const restaurantProducts = [
     {name: 'Margherita Pizza', hsnCode: '996331', price: 250},
     {name: 'Paneer Butter Masala', hsnCode: '996331', price: 180},
@@ -36,9 +39,18 @@ const Products = () => {
     {name: 'Pav Bhaji', hsnCode: '996331', price: 110},
   ];
 
+  const navigateToAddProduct = () => {
+    navigation.navigate('AddProduct');
+  };
+
   return (
     <Layout>
-      <SecondaryHeader navigation="back" title="Products" isAddbtn={true} />
+      <SecondaryHeader
+        navigation="back"
+        title="Products"
+        isAddbtn={true}
+        addBtnFunction={navigateToAddProduct}
+      />
       {/* <SearchInput /> */}
       <FlatList
         data={restaurantProducts}
@@ -53,7 +65,7 @@ const Products = () => {
         showsVerticalScrollIndicator={false}
         renderItem={(item, index) => <ProductCard />}
       />
-      <FloatingAddButton />
+      <FloatingAddButton onPress={navigateToAddProduct} />
     </Layout>
   );
 };
@@ -62,7 +74,7 @@ const styles = StyleSheet.create({
   contentContainerStyle: {
     paddingHorizontal: 20,
     marginTop: 20,
-    paddingBottom: 60,
+    paddingBottom: 80,
   },
   headerText: {
     fontSize: 18,

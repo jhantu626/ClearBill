@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {
+  AddProducts,
   Home,
   Invoice,
   Otp,
@@ -37,6 +38,16 @@ const App = () => {
       </Stack.Navigator>
     );
   };
+
+  const ProductStack = () => (
+    <Stack.Navigator initialRouteName="AddProduct" screenOptions={{
+      headerShown: false,
+      animation: 'slide_from_right'
+    }}>
+      <Stack.Screen name="Product" component={Products} />
+      <Stack.Screen name="AddProduct" component={AddProducts} />
+    </Stack.Navigator>
+  );
 
   const AppStack = () => {
     return (
@@ -76,7 +87,7 @@ const App = () => {
         />
         <Tab.Screen
           name="Product"
-          component={Products}
+          component={ProductStack}
           options={{
             tabBarIcon: ({color}) => (
               <AntDesign name="inbox" size={24} color={color} />

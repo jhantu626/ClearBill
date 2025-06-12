@@ -11,7 +11,7 @@ const SecondaryHeader = ({
   title = '',
   isNotification = false,
   isAddbtn = false,
-  addBtnFunction = () => {},
+  addBtnFunction = () => {}
 }) => {
   const toNavigation = useNavigation();
   return (

@@ -11,7 +11,8 @@ import Invoice from './AppScreens/Invoice/Invoice';
 
 // Products
 import Products from './AppScreens/Products/Products';
+import AddProducts from './AppScreens/Products/AddProducts';
 
 // Settings
 import Setting from './AppScreens/Setting/Setting';
-export {SplashScreen, Signin, Otp, Home, Products, Invoice, Setting};
+export {SplashScreen, Signin, Otp, Home, Products, Invoice, Setting,AddProducts};

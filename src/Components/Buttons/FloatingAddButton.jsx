@@ -1,11 +1,11 @@
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { colors } from '../../utils/colors';
+import {colors} from '../../utils/colors';
 
-const FloatingAddButton = () => {
+const FloatingAddButton = ({onPress = () => {}}) => {
   return (
-    <TouchableOpacity style={styles.floatingBtn}>
+    <TouchableOpacity style={styles.floatingBtn} onPress={onPress}>
       <Entypo name="add-to-list" size={24} color={'#fff'} />
     </TouchableOpacity>
   );

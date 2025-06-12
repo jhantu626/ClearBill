@@ -13,6 +13,7 @@ import ProductCard from './Cards/ProductCard';
 
 // Inputs
 import FloatingAddButton from './Buttons/FloatingAddButton';
+import UploadInput from './Input/UploadInput';
 
 export {
   SecondaryHeader,
