@@ -40,7 +40,7 @@ const App = () => {
   };
 
   const ProductStack = () => (
-    <Stack.Navigator initialRouteName="AddProduct" screenOptions={{
+    <Stack.Navigator initialRouteName="Product" screenOptions={{
       headerShown: false,
       animation: 'slide_from_right'
     }}>
@@ -52,7 +52,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Product"
+        initialRouteName="Setting"
         backBehavior="history"
         screenOptions={{
           headerShown: false,
