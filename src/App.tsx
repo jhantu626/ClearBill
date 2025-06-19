@@ -52,7 +52,7 @@ const App = () => {
   );
 
   const SettingStack=()=>(
-    <Stack.Navigator initialRouteName="Setting" screenOptions={{
+    <Stack.Navigator initialRouteName="Users" screenOptions={{
       headerShown: false,
       animation: 'slide_from_right'
     }}>

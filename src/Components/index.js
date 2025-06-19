@@ -10,6 +10,7 @@ import ChartBar from './charts/ChartBar';
 
 // Cards
 import ProductCard from './Cards/ProductCard';
+import UserCard from './Cards/UserCard';
 
 // Inputs
 import FloatingAddButton from './Buttons/FloatingAddButton';
@@ -25,5 +26,6 @@ export {
   SearchInput,
   ProductCard,
   FloatingAddButton,
-  BusinessCardShimmer
+  BusinessCardShimmer,
+  UserCard,
 };
