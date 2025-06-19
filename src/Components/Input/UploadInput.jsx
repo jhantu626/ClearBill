@@ -1,4 +1,5 @@
 import {
+  Image,
   PermissionsAndroid,
   Platform,
   StyleSheet,
@@ -12,8 +13,9 @@ import {colors} from '../../utils/colors';
 import {fonts} from '../../utils/fonts';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import {FILE_URL} from '../../utils/config';
 
-const UploadInput = ({title, subTitle}) => {
+const UploadInput = ({title, subTitle, value = null, setValue}) => {
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
       const permission =
@@ -38,17 +40,32 @@ const UploadInput = ({title, subTitle}) => {
       width: 200,
       height: 200,
       cropping: true,
-      avoidEmptySpaceAroundImage: true
+      avoidEmptySpaceAroundImage: true,
     }).then(image => {
       ToastAndroid.show('Image Picked', ToastAndroid.SHORT);
+      setValue(image);
     });
   };
 
   return (
     <TouchableOpacity style={styles.container} onPress={handleImagePickcker}>
-      <AntDesign name="clouduploado" size={50} color={'#000'} />
-      <Text style={styles.titleText}>{title}</Text>
-      <Text style={styles.subTitleText}>{subTitle}</Text>
+      {value !== null ? (
+        <Image
+          source={{
+            uri: value?.path
+              ? value.path
+              : FILE_URL + '/business/logo/' + value,
+          }}
+          style={{width: '100%', height: '100%', borderRadius: 8}}
+          resizeMode="contain"
+        />
+      ) : (
+        <>
+          <AntDesign name="clouduploado" size={50} color={'#000'} />
+          <Text style={styles.titleText}>{title}</Text>
+          <Text style={styles.subTitleText}>{subTitle}</Text>
+        </>
+      )}
     </TouchableOpacity>
   );
 };

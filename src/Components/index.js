@@ -15,6 +15,9 @@ import ProductCard from './Cards/ProductCard';
 import FloatingAddButton from './Buttons/FloatingAddButton';
 import UploadInput from './Input/UploadInput';
 
+// Shimmers
+import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
+
 export {
   SecondaryHeader,
   DefaultInput,
@@ -22,4 +25,5 @@ export {
   SearchInput,
   ProductCard,
   FloatingAddButton,
+  BusinessCardShimmer
 };

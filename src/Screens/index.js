@@ -15,4 +15,7 @@ import AddProducts from './AppScreens/Products/AddProducts';
 
 // Settings
 import Setting from './AppScreens/Setting/Setting';
-export {SplashScreen, Signin, Otp, Home, Products, Invoice, Setting,AddProducts};
+import Users from './AppScreens/Setting/Users';
+import AddBusiness from './AppScreens/Setting/AddBusiness';
+
+export {SplashScreen, Signin, Otp, Home, Products, Invoice, Setting,AddProducts,Users,AddBusiness};

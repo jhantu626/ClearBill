@@ -9,6 +9,7 @@ const DefaultInput = ({
   setValue,
   placeholder = 'Enter your email',
   keyboardType = 'default',
+  maxLength,
   height = 55,
 }) => {
   return (
@@ -22,6 +23,7 @@ const DefaultInput = ({
         placeholder={placeholder}
         keyboardType={keyboardType}
         placeholderTextColor={'#61758A'}
+        maxLength={maxLength}
       />
     </View>
   );

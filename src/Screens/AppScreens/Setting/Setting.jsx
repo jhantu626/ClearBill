@@ -3,19 +3,26 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {SecondaryHeader} from '../../../Components';
+import {BusinessCardShimmer, SecondaryHeader} from '../../../Components';
 import {colors} from '../../../utils/colors';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {fonts} from '../../../utils/fonts';
 import Entypo from 'react-native-vector-icons/Entypo';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {userService} from '../../../Services/UserService';
+import {useAuth} from '../../../Context/AuthContext';
+import { FILE_URL } from '../../../utils/config';
 
 const Setting = () => {
-  const [hasBusiness, setHasBusiness] = useState(true);
+  const {authToken} = useAuth();
+  const navigation = useNavigation();
+  const [hasBusiness, setHasBusiness] = useState(false);
   const company = {
     id: 1,
     name: 'RP Enterprise',
@@ -26,34 +33,83 @@ const Setting = () => {
     createdAt: '2025-06-17T23:54:56.167313',
     updatedAt: null,
   };
+
+  // Loading State
+  const [isLoading, setIsLoading] = useState(true);
+
+  // State values
+  const [user, setUser] = useState({});
+
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    try {
+      const data = await userService.getProfile({authToken: authToken});
+      console.log('data ', data);
+      if (data) {
+        console.log();
+      }
+      setHasBusiness(data?.business !== null);
+      setUser(data)
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfile();
+    }, []),
+  );
+
   return (
     <Layout>
       <SecondaryHeader title="Setting" navigation="back" />
       <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
-        {hasBusiness ? (
+        {isLoading ? (
+          <BusinessCardShimmer />
+        ) : hasBusiness ? (
           <View style={styles.businessCard}>
             <View style={styles.leftContainer}>
-              <Text style={styles.companyName}>{company.name}</Text>
+              <Text style={styles.companyName}>{user?.business?.name}</Text>
               <Text style={styles.companyDetailasText}>
-                GST No: {company.gstNo}
+                GST No: {user?.business?.gstNo}
               </Text>
               <Text style={styles.companyDetailasText}>
-                Address: {company.address}
+                Address: {user?.business?.address}
               </Text>
               <Text style={styles.companyDetailasText}>
-                State Code: {company.stateCode}
+                State Code: {user?.business?.stateCode}
               </Text>
-              <TouchableOpacity style={styles.btnContainer}>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() =>{
+                  if(user?.role==='ADMIN'){
+                    navigation.navigate('AddBusiness', {
+                    mode: 'edit',
+                    business: user?.business
+                  })
+                  }else{
+                    ToastAndroid.show("You dont have permission to edit business", ToastAndroid.LONG);
+                  }
+                }}>
                 <Text style={styles.exitText}>Edit</Text>
               </TouchableOpacity>
             </View>
             <Image
               style={styles.businessIcon}
-              source={require('./../../../../assets/images/company.png')}
+              source={{uri: FILE_URL+`/business/logo/${user?.business?.logo}`}}
             />
           </View>
         ) : (
-          <TouchableOpacity style={styles.addBusinessCard}>
+          <TouchableOpacity
+            style={styles.addBusinessCard}
+            onPress={() =>
+              navigation.navigate('AddBusiness', {
+                mode: 'add',
+              })
+            }>
             <Octicons
               name="diff-added"
               size={48}
@@ -62,17 +118,23 @@ const Setting = () => {
           </TouchableOpacity>
         )}
         <Text style={styles.titleText}>User Management</Text>
-        <TouchableOpacity style={styles.userMenuContainer}>
+        <TouchableOpacity
+          style={styles.userMenuContainer}
+          onPress={() => navigation.navigate('Users')}>
           <View>
             <Text style={styles.textTitle}>Team Members</Text>
-            <Text style={styles.textDescription}>Add and Manage Team Members</Text>
+            <Text style={styles.textDescription}>
+              Add and Manage Team Members
+            </Text>
           </View>
           <Entypo name="chevron-right" size={24} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.userMenuContainer}>
           <View>
             <Text style={styles.textTitle}>Account Setting</Text>
-            <Text style={styles.textDescription}>Update your account information</Text>
+            <Text style={styles.textDescription}>
+              Update your account information
+            </Text>
           </View>
           <Entypo name="chevron-right" size={24} />
         </TouchableOpacity>
@@ -144,18 +206,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 10
+    marginVertical: 10,
   },
-  textTitle:{
+  textTitle: {
     fontFamily: fonts.medium,
     fontSize: 16,
     color: '#000',
   },
-  textDescription:{
+  textDescription: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    color: colors.inputBackground
-  }
+    color: colors.inputBackground,
+  },
 });
 
 export default Setting;
