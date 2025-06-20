@@ -18,6 +18,7 @@ import UploadInput from './Input/UploadInput';
 
 // Shimmers
 import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
+import UserCardShimmer from './Shimmers/UserCardShimmer';
 
 export {
   SecondaryHeader,
@@ -28,4 +29,5 @@ export {
   FloatingAddButton,
   BusinessCardShimmer,
   UserCard,
+  UserCardShimmer,
 };

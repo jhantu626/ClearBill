@@ -50,4 +50,9 @@ function isValidIndianAddress(address) {
   return addressRegex.test(trimmed) && startsWithValidChar && endsWithValidChar;
 }
 
-export {verifyEmail, isValidName,isValidGSTNumber,isValidIndianAddress};
+function isValidIndianNumber(number) {
+  const pattern = /^[6-9]\d{9}$/;
+  return pattern.test(number);
+}
+
+export {verifyEmail, isValidName,isValidGSTNumber,isValidIndianAddress,isValidIndianNumber};

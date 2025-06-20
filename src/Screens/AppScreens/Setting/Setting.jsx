@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {BusinessCardShimmer, SecondaryHeader} from '../../../Components';
+import {BusinessCardShimmer, SecondaryHeader, UserCardShimmer} from '../../../Components';
 import {colors} from '../../../utils/colors';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {fonts} from '../../../utils/fonts';

@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '../../utils/colors';
 import {fonts} from '../../utils/fonts';
 
-const UserCard = (person = {}, key) => {
+const UserCard = ({personData = {}, key}) => {
   return (
     <TouchableOpacity style={styles.container} key={key}>
       <View style={styles.leftCOntainer}>
@@ -12,12 +12,12 @@ const UserCard = (person = {}, key) => {
           <Ionicons name="person" size={40} color={'#000'} />
         </View>
         <View style={styles.contentContainer}>
-          <Text style={styles.nameText}>Pritam Bala</Text>
-          <Text style={styles.subText}>+91 9775746484</Text>
-          <Text style={styles.subText}>pritambala626@gmail.com</Text>
+          <Text style={styles.nameText}>{personData.name || personData.role}</Text>
+          <Text style={styles.subText}>{personData.phone || '+91 1234567890'}</Text>
+          <Text style={styles.subText}>{personData.email}</Text>
         </View>
       </View>
-      <Text style={styles.adminText}>ADMIN</Text>
+      <Text style={styles.adminText}>{personData.role}</Text>
     </TouchableOpacity>
   );
 };

@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {
   AddBusiness,
   AddProducts,
+  CreateUser,
   Home,
   Invoice,
   Otp,
@@ -14,6 +15,7 @@ import {
   Signin,
   SplashScreen,
   Users,
+  ValidateOtp,
 } from './Screens';
 import AuthProvider, {useAuth} from './Context/AuthContext';
 import {colors} from './utils/colors';
@@ -52,13 +54,15 @@ const App = () => {
   );
 
   const SettingStack=()=>(
-    <Stack.Navigator initialRouteName="Users" screenOptions={{
+    <Stack.Navigator initialRouteName="Setting" screenOptions={{
       headerShown: false,
       animation: 'slide_from_right'
     }}>
       <Stack.Screen name="Setting" component={Setting} />
       <Stack.Screen name="Users" component={Users} />
       <Stack.Screen name="AddBusiness" component={AddBusiness} />
+      <Stack.Screen name="CreateUser" component={CreateUser} />
+      <Stack.Screen name='ValidateOtp' component={ValidateOtp}/>
     </Stack.Navigator>
   )
 

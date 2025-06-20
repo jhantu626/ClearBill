@@ -17,5 +17,20 @@ import AddProducts from './AppScreens/Products/AddProducts';
 import Setting from './AppScreens/Setting/Setting';
 import Users from './AppScreens/Setting/Users';
 import AddBusiness from './AppScreens/Setting/AddBusiness';
+import CreateUser from './AppScreens/Setting/CreateUser';
+import ValidateOtp from './AppScreens/Setting/ValidateOtp';
 
-export {SplashScreen, Signin, Otp, Home, Products, Invoice, Setting,AddProducts,Users,AddBusiness};
+export {
+  SplashScreen,
+  Signin,
+  Otp,
+  Home,
+  Products,
+  Invoice,
+  Setting,
+  AddProducts,
+  Users,
+  AddBusiness,
+  CreateUser,
+  ValidateOtp,
+};

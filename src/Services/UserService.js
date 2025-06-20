@@ -22,6 +22,65 @@ class UserService {
       return data;
     }
   }
+
+  // add staff generate otp
+  async generateOtpForNewUser({authToken, email}) {
+    const uri = `${this.baseUrl}/user/add-user/${email}`;
+    try {
+      const response = await axios.post(
+        uri,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
+
+  async addUser({authToken, name, email, phone}) {
+    const uri = `${this.baseUrl}/user/add-user/verify`;
+    const payload = {
+      name: name,
+      email: email,
+      phone: phone,
+    };
+    try {
+      const response = await axios.post(uri, payload, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
+
+  // Users by business
+  async getUsersByBusiness({authToken}) {
+    const uri = `${this.baseUrl}/user/business`;
+    try {
+      const response = await axios.get(uri, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data=await response.data;
+      return data;
+    } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
 }
 
 const userService = new UserService();
