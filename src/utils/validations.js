@@ -4,7 +4,6 @@ const verifyEmail = email => {
   return emailRegex.test(email);
 };
 
-
 function isValidName(name) {
   if (typeof name !== 'string') return false;
 
@@ -26,11 +25,11 @@ function isValidGSTNumber(gstNumber) {
   const trimmed = gstNumber.trim().toUpperCase();
 
   // Regex to match standard GST format
-  const gstRegex = /^[0-3][0-9][A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
+  const gstRegex =
+    /^[0-3][0-9][A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
 
   return gstRegex.test(trimmed);
 }
-
 
 function isValidIndianAddress(address) {
   if (typeof address !== 'string') return false;
@@ -55,4 +54,36 @@ function isValidIndianNumber(number) {
   return pattern.test(number);
 }
 
-export {verifyEmail, isValidName,isValidGSTNumber,isValidIndianAddress,isValidIndianNumber};
+function formatDateToMonthYear(dateStr) {
+  const date = new Date(dateStr);
+
+  // Array of short month names
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${month} ${year}`;
+}
+
+export {
+  verifyEmail,
+  isValidName,
+  isValidGSTNumber,
+  isValidIndianAddress,
+  isValidIndianNumber,
+  formatDateToMonthYear,
+};

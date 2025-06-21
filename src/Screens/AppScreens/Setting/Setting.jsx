@@ -9,7 +9,11 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {BusinessCardShimmer, SecondaryHeader, UserCardShimmer} from '../../../Components';
+import {
+  BusinessCardShimmer,
+  SecondaryHeader,
+  UserCardShimmer,
+} from '../../../Components';
 import {colors} from '../../../utils/colors';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {fonts} from '../../../utils/fonts';
@@ -17,22 +21,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {userService} from '../../../Services/UserService';
 import {useAuth} from '../../../Context/AuthContext';
-import { FILE_URL } from '../../../utils/config';
+import {FILE_URL} from '../../../utils/config';
 
 const Setting = () => {
+  // NAVIGATION
+
   const {authToken} = useAuth();
   const navigation = useNavigation();
   const [hasBusiness, setHasBusiness] = useState(false);
-  const company = {
-    id: 1,
-    name: 'RP Enterprise',
-    gstNo: 'JSHR9493KDIFMFK',
-    address: '8/1/C, KOLKATA 700067, WESTBENGAL',
-    stateCode: 19,
-    logo: 'f8a44fc4-fde9-47bc-bcf0-73978aff77ca.jpg',
-    createdAt: '2025-06-17T23:54:56.167313',
-    updatedAt: null,
-  };
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +45,7 @@ const Setting = () => {
         console.log();
       }
       setHasBusiness(data?.business !== null);
-      setUser(data)
+      setUser(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,14 +80,17 @@ const Setting = () => {
               </Text>
               <TouchableOpacity
                 style={styles.btnContainer}
-                onPress={() =>{
-                  if(user?.role==='ADMIN'){
+                onPress={() => {
+                  if (user?.role === 'ADMIN') {
                     navigation.navigate('AddBusiness', {
-                    mode: 'edit',
-                    business: user?.business
-                  })
-                  }else{
-                    ToastAndroid.show("You dont have permission to edit business", ToastAndroid.LONG);
+                      mode: 'edit',
+                      business: user?.business,
+                    });
+                  } else {
+                    ToastAndroid.show(
+                      'You dont have permission to edit business',
+                      ToastAndroid.LONG,
+                    );
                   }
                 }}>
                 <Text style={styles.exitText}>Edit</Text>
@@ -99,7 +98,9 @@ const Setting = () => {
             </View>
             <Image
               style={styles.businessIcon}
-              source={{uri: FILE_URL+`/business/logo/${user?.business?.logo}`}}
+              source={{
+                uri: FILE_URL + `/business/logo/${user?.business?.logo}`,
+              }}
             />
           </View>
         ) : (
@@ -129,7 +130,21 @@ const Setting = () => {
           </View>
           <Entypo name="chevron-right" size={24} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.userMenuContainer}>
+        <TouchableOpacity
+          style={styles.userMenuContainer}
+          onPress={() => {
+            navigation.navigate('UserAccount', {
+              user: {
+                id: user?.id,
+                name: user?.name,
+                email: user?.email,
+                createdAt: user?.createdAt,
+                updatedAt: user?.updatedAt,
+                role: user?.role,
+                phone: user?.phone,
+              },
+            });
+          }}>
           <View>
             <Text style={styles.textTitle}>Account Setting</Text>
             <Text style={styles.textDescription}>

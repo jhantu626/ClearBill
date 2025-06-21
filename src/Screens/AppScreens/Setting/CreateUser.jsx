@@ -102,7 +102,7 @@ const CreateUser = () => {
           );
         } else {
           setOtp('');
-          ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+          ToastAndroid.show(data?.message || "Something went wrong", ToastAndroid.SHORT);
         }
       } catch (error) {
         console.error(error);

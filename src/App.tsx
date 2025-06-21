@@ -14,6 +14,7 @@ import {
   Setting,
   Signin,
   SplashScreen,
+  UserAccount,
   Users,
   ValidateOtp,
 } from './Screens';
@@ -44,27 +45,32 @@ const App = () => {
   };
 
   const ProductStack = () => (
-    <Stack.Navigator initialRouteName="Product" screenOptions={{
-      headerShown: false,
-      animation: 'slide_from_right'
-    }}>
+    <Stack.Navigator
+      initialRouteName="Product"
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}>
       <Stack.Screen name="Product" component={Products} />
       <Stack.Screen name="AddProduct" component={AddProducts} />
     </Stack.Navigator>
   );
 
-  const SettingStack=()=>(
-    <Stack.Navigator initialRouteName="Setting" screenOptions={{
-      headerShown: false,
-      animation: 'slide_from_right'
-    }}>
+  const SettingStack = () => (
+    <Stack.Navigator
+      initialRouteName="Setting"
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}>
       <Stack.Screen name="Setting" component={Setting} />
       <Stack.Screen name="Users" component={Users} />
       <Stack.Screen name="AddBusiness" component={AddBusiness} />
       <Stack.Screen name="CreateUser" component={CreateUser} />
-      <Stack.Screen name='ValidateOtp' component={ValidateOtp}/>
+      <Stack.Screen name="ValidateOtp" component={ValidateOtp} />
+      <Stack.Screen name="UserAccount" component={UserAccount} />
     </Stack.Navigator>
-  )
+  );
 
   const AppStack = () => {
     return (
