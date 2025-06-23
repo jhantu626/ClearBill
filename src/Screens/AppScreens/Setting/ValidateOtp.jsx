@@ -21,7 +21,7 @@ const ValidateOtp = () => {
 
   // Route
   const route = useRoute();
-  const {user, otp} = route.params;
+  const {user, otp, mode} = route.params;
 
   // Navigation
   const navigation = useNavigation();
@@ -44,14 +44,30 @@ const ValidateOtp = () => {
   const handleAddUser = async () => {
     setIsLoading(true);
     try {
-      const data = await userService.addUser({
-        authToken: authToken,
-        name: user?.name,
-        email: user?.email,
-        phone: user?.phone,
-      });
+      let data = null;
+      if (mode === 'create') {
+        data = await userService.addUser({
+          authToken: authToken,
+          name: user?.name,
+          email: user?.email,
+          phone: user?.phone,
+        });
+      } else {
+        data = await userService.updateUser({
+          id: user?.id,
+          name: user?.name,
+          email: user?.email,
+          phone: user?.phone,
+          authToken: authToken,
+        });
+      }
       if (data?.status) {
-        ToastAndroid.show('User Added Successfully', ToastAndroid.SHORT);
+        ToastAndroid.show(
+          mode === 'create'
+            ? 'User Added Successfully'
+            : 'Updated Successfully',
+          ToastAndroid.SHORT,
+        );
         navigation.dispatch(StackActions.replace('Users'));
       } else {
         ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
@@ -73,6 +89,7 @@ const ValidateOtp = () => {
       }
     } else {
       ToastAndroid.show('Invalid OTP', ToastAndroid.SHORT);
+      setOtpText(['', '', '', '']);
     }
   };
 

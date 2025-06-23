@@ -11,6 +11,7 @@ const DefaultInput = ({
   keyboardType = 'default',
   maxLength,
   height = 55,
+  disabled = false,
 }) => {
   return (
     <View style={[styles.container, {height: height}]}>
@@ -24,6 +25,7 @@ const DefaultInput = ({
         keyboardType={keyboardType}
         placeholderTextColor={'#61758A'}
         maxLength={maxLength}
+        editable={!disabled}
       />
     </View>
   );

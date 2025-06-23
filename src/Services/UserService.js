@@ -43,6 +43,26 @@ class UserService {
       return data;
     }
   }
+  
+  async generateOtpForUpdateUser({authToken, email}) {
+    const uri = `${this.baseUrl}/user/update-user/verify/${email}`;
+    try {
+      const response = await axios.get(
+        uri,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      console.log(error)
+      const data = await error.response.data;
+      return data;
+    }
+  }
 
   async addUser({authToken, name, email, phone}) {
     const uri = `${this.baseUrl}/user/add-user/verify`;
@@ -74,7 +94,32 @@ class UserService {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      const data=await response.data;
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
+
+  // Update user
+  async updateUser({authToken, id, name,
+     email, phone}) {
+    const uri = `${this.baseUrl}/user`;
+    const payload = {
+      id: id,
+      name: name,
+      email: email,
+      phone: phone,
+    };
+    console.log(uri, payload);
+    try {
+      const response = await axios.put(uri, payload, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.data;
       return data;
     } catch (error) {
       const data = await error.response.data;

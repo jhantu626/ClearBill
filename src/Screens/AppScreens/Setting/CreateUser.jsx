@@ -19,18 +19,24 @@ import {
 } from '../../../utils/validations';
 import {userService} from '../../../Services/UserService';
 import {useAuth} from '../../../Context/AuthContext';
-import {StackActions, useNavigation} from '@react-navigation/native';
+import {StackActions, useNavigation, useRoute} from '@react-navigation/native';
 
 const CreateUser = () => {
   // Navigation
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const {mode, user} = route.params || {mode: 'create'};
+
+  console.log('user', user);
+  console.log('mode', mode);
 
   // Auth Context
   const {authToken} = useAuth();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState(mode === 'edit' ? user.name : '');
+  const [email, setEmail] = useState(mode === 'edit' ? user.email : '');
+  const [phone, setPhone] = useState(mode === 'edit' ? user.phone : '');
   const [otp, setOtp] = useState('');
 
   // Error State
@@ -82,13 +88,31 @@ const CreateUser = () => {
 
   const handleSubmit = async () => {
     if (validation()) {
+      if (
+        mode === 'edit' &&
+        email === user.email &&
+        phone === user.phone &&
+        name === user.name
+      ) {
+        console.log('inside the update');
+        ToastAndroid.show('No Changes Found!', ToastAndroid.SHORT);
+        return;
+      }
       try {
         setIsLoading(true);
-        const data = await userService.generateOtpForNewUser({
-          authToken: authToken,
-          email: email,
-        });
-        if (data.status) {
+        let data = null;
+        if (mode === 'create') {
+          data = await userService.generateOtpForNewUser({
+            authToken: authToken,
+            email: email,
+          });
+        } else {
+          data = await userService.generateOtpForUpdateUser({
+            authToken: authToken,
+            email: email,
+          });
+        }
+        if (data?.status) {
           setOtp(data.message);
           navigation.dispatch(
             StackActions.replace('ValidateOtp', {
@@ -97,12 +121,17 @@ const CreateUser = () => {
                 email: email,
                 phone: phone,
               },
+              mode: mode,
               otp: data.message,
             }),
           );
         } else {
+          console.log(data)
           setOtp('');
-          ToastAndroid.show(data?.message || "Something went wrong", ToastAndroid.SHORT);
+          ToastAndroid.show(
+            data?.message || 'Something went wrong',
+            ToastAndroid.SHORT,
+          );
         }
       } catch (error) {
         console.error(error);
@@ -125,6 +154,7 @@ const CreateUser = () => {
           <Text style={styles.errorText}>{error.nameError}</Text>
         )}
         <DefaultInput
+          disabled={mode === 'edit'}
           placeholder="Enter User Email"
           value={email}
           setValue={setEmail}
@@ -147,6 +177,8 @@ const CreateUser = () => {
           disabled={isLoading}>
           {isLoading ? (
             <ActivityIndicator size={'large'} color={'#fff'} />
+          ) : mode === 'edit' ? (
+            <Text style={styles.btnText}>Edit</Text>
           ) : (
             <Text style={styles.btnText}>Add User</Text>
           )}

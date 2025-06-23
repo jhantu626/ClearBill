@@ -22,8 +22,12 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {userService} from '../../../Services/UserService';
 import {useAuth} from '../../../Context/AuthContext';
 import {FILE_URL} from '../../../utils/config';
+import {useAccess} from '../../../Context/AccessContext';
 
 const Setting = () => {
+  // CONTEXTS
+  const {setRole, setCurrentUserId} = useAccess();
+
   // NAVIGATION
 
   const {authToken} = useAuth();
@@ -41,9 +45,8 @@ const Setting = () => {
     try {
       const data = await userService.getProfile({authToken: authToken});
       console.log('data ', data);
-      if (data) {
-        console.log();
-      }
+      setRole(prev => data?.role);
+      setCurrentUserId(prev => data?.id);
       setHasBusiness(data?.business !== null);
       setUser(data);
     } catch (error) {
@@ -65,7 +68,7 @@ const Setting = () => {
       <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
         {isLoading ? (
           <BusinessCardShimmer />
-        ) : hasBusiness ? (
+        ) : user?.business ? (
           <View style={styles.businessCard}>
             <View style={styles.leftContainer}>
               <Text style={styles.companyName}>{user?.business?.name}</Text>
@@ -119,17 +122,19 @@ const Setting = () => {
           </TouchableOpacity>
         )}
         <Text style={styles.titleText}>User Management</Text>
-        <TouchableOpacity
-          style={styles.userMenuContainer}
-          onPress={() => navigation.navigate('Users')}>
-          <View>
-            <Text style={styles.textTitle}>Team Members</Text>
-            <Text style={styles.textDescription}>
-              Add and Manage Team Members
-            </Text>
-          </View>
-          <Entypo name="chevron-right" size={24} />
-        </TouchableOpacity>
+        {user?.role === 'ADMIN' && (
+          <TouchableOpacity
+            style={styles.userMenuContainer}
+            onPress={() => navigation.navigate('Users')}>
+            <View>
+              <Text style={styles.textTitle}>Team Members</Text>
+              <Text style={styles.textDescription}>
+                Add and Manage Team Members
+              </Text>
+            </View>
+            <Entypo name="chevron-right" size={24} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           style={styles.userMenuContainer}
           onPress={() => {

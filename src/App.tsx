@@ -24,6 +24,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {fonts} from './utils/fonts';
+import AccessProvider from './Context/AccessContext';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -57,25 +58,27 @@ const App = () => {
   );
 
   const SettingStack = () => (
-    <Stack.Navigator
-      initialRouteName="Setting"
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}>
-      <Stack.Screen name="Setting" component={Setting} />
-      <Stack.Screen name="Users" component={Users} />
-      <Stack.Screen name="AddBusiness" component={AddBusiness} />
-      <Stack.Screen name="CreateUser" component={CreateUser} />
-      <Stack.Screen name="ValidateOtp" component={ValidateOtp} />
-      <Stack.Screen name="UserAccount" component={UserAccount} />
-    </Stack.Navigator>
+    <AccessProvider>
+      <Stack.Navigator
+        initialRouteName="Setting"
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}>
+        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="Users" component={Users} />
+        <Stack.Screen name="AddBusiness" component={AddBusiness} />
+        <Stack.Screen name="CreateUser" component={CreateUser} />
+        <Stack.Screen name="ValidateOtp" component={ValidateOtp} />
+        <Stack.Screen name="UserAccount" component={UserAccount} />
+      </Stack.Navigator>
+    </AccessProvider>
   );
 
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Setting"
+        initialRouteName="Home"
         backBehavior="history"
         screenOptions={{
           headerShown: false,

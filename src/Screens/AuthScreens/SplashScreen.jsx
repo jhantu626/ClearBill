@@ -34,7 +34,7 @@ const SplashScreen = () => {
       <View style={styles.container}>
         <View style={styles.topContainer}>
           <Image
-            source={require('./../../../assets/images/splash.webp')}
+            source={require('./../../../assets/images/logo.png')}
             style={styles.logo}
           />
           <Text style={styles.taglineText}>Your bill is being generated</Text>
