@@ -47,7 +47,7 @@ const App = () => {
 
   const ProductStack = () => (
     <Stack.Navigator
-      initialRouteName="Product"
+      initialRouteName="AddProduct"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
@@ -78,7 +78,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName="Product"
         backBehavior="history"
         screenOptions={{
           headerShown: false,

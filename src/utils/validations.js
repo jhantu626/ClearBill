@@ -79,6 +79,27 @@ function formatDateToMonthYear(dateStr) {
   return `${month} ${year}`;
 }
 
+function validateHsnCode(hsnCode) {
+    const cleanedCode = hsnCode.replace(/\s+/g, '');
+
+    if (![2, 4, 6, 8].includes(cleanedCode.length)) {
+        return false;
+    }
+
+    if (!/^\d+$/.test(cleanedCode)) {
+        return false;
+    }
+
+    return true;
+}
+
+function validateProductName(name) {
+  if (typeof name !== 'string') return false;
+  if (name.trim().length < 2 || name.trim().length > 100) return false;
+  if (!/^[a-zA-Z0-9\s\-&()]+$/.test(name)) return false;
+  return true;
+}
+
 export {
   verifyEmail,
   isValidName,
@@ -86,4 +107,6 @@ export {
   isValidIndianAddress,
   isValidIndianNumber,
   formatDateToMonthYear,
+  validateHsnCode,
+  validateProductName
 };

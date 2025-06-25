@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   Touchable,
   TouchableOpacity,
   View,
@@ -61,9 +62,14 @@ const Signin = () => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
+      if (response.type === 'cancelled') {
+        ToastAndroid.show('Cancelled', ToastAndroid.SHORT);
+        return;
+      }
       console.info('response ');
       console.log(response);
       const email = response?.data?.user?.email;
+      console.log('email, ', email);
       signInWithGoogle({email});
     } catch (error) {
       console.log(error);

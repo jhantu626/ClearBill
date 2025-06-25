@@ -15,6 +15,7 @@ import UserCard from './Cards/UserCard';
 // Inputs
 import FloatingAddButton from './Buttons/FloatingAddButton';
 import UploadInput from './Input/UploadInput';
+import SelectInput from './Input/SelectInput';
 
 // Shimmers
 import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
@@ -30,4 +31,6 @@ export {
   BusinessCardShimmer,
   UserCard,
   UserCardShimmer,
+  UploadInput,
+  SelectInput,
 };
