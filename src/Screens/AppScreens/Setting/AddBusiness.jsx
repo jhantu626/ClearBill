@@ -182,7 +182,7 @@ const AddBusiness = () => {
                   type: logo.mime,
                   name: logo.filename,
                 }
-              : null,
+              : null
           });
           console.log(data)
           if(data.status){

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,8 +19,13 @@ import {
   validateProductName,
 } from '../../../utils/validations';
 import {fonts} from '../../../utils/fonts';
+import {productService} from '../../../Services/ProductService';
+import {useAuth} from '../../../Context/AuthContext';
 
 const AddProducts = () => {
+  // TOKEN
+  const {authToken} = useAuth();
+
   // STATE VARIABLES
   const [name, setName] = useState('');
   const [unitType, setUnityType] = useState('PCS');
@@ -47,6 +53,9 @@ const AddProducts = () => {
     imageError: '',
   });
 
+  // LOADING STATE
+  const [isLoading, setIsLoading] = useState(false);
+
   // Validation Function
   const validation = () => {
     if (!validateProductName(name)) {
@@ -67,8 +76,7 @@ const AddProducts = () => {
       });
       ToastAndroid.show('Hsn Code is Invalid', ToastAndroid.SHORT);
       return false;
-    } else if (gstType === 'GST' && (!cGst && !sGst && !iGst)) {
-      console.log("cGst",cGst)
+    } else if (gstType === 'GST' && !cGst && !sGst && !iGst) {
       setError({
         cGstError: 'Atlease one of CGST, SGST, IGST is Required',
       });
@@ -100,7 +108,7 @@ const AddProducts = () => {
     return true;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validation()) {
       console.log({
         name,
@@ -115,14 +123,62 @@ const AddProducts = () => {
         description,
         image,
       });
+
+      try {
+        setIsLoading(true);
+        const data = await productService.addProduct({
+          authToken: authToken,
+          name: name,
+          description: description,
+          price: price,
+          discount: discount ? discount : 0,
+          isTaxable: gstType === 'GST' ? true : false,
+          hsnCode: hsnCode,
+          unitType: unitType,
+          cgst: cGst ? cGst : 0,
+          sgst: sGst ? sGst : 0,
+          igst: iGst ? iGst : 0,
+          logo: image?.path
+            ? {
+                uri: image.path,
+                type: image.mime,
+                name: image.filename,
+              }
+            : null,
+        });
+        console.log(data);
+        if (data?.status) {
+          ToastAndroid.show(data.message, ToastAndroid.LONG);
+          resetForm();
+        } else {
+          ToastAndroid.show(data.message, ToastAndroid.LONG);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setUnityType('PCS');
+    setPrice(0);
+    setDiscount(0);
+    setGstType('Non-GST');
+    setHsnCode('');
+    setCGst(0);
+    setSGst(0);
+    setIGst(0);
+    setDescription('');
+    setImage(null);
   };
 
   return (
     <Layout>
       <SecondaryHeader title="Add Product" navigation="back" />
       <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
-        <TextInput keyboardType="number-pad" />
         <DefaultInput
           placeholder="Enter Product Name"
           value={name}
@@ -210,8 +266,15 @@ const AddProducts = () => {
         {error.imageError && (
           <Text style={styles.errorText}>{error.imageError}</Text>
         )}
-        <TouchableOpacity style={styles.addBtn} onPress={handleSubmit}>
-          <Text style={styles.btnText}>Add Product</Text>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={handleSubmit}
+          disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator size={'large'} color={'#fff'} />
+          ) : (
+            <Text style={styles.btnText}>Add Product</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </Layout>
