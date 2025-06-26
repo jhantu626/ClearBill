@@ -10,6 +10,7 @@ import {
   Home,
   Invoice,
   Otp,
+  ProductDetails,
   Products,
   Setting,
   Signin,
@@ -47,13 +48,14 @@ const App = () => {
 
   const ProductStack = () => (
     <Stack.Navigator
-      initialRouteName="AddProduct"
+      initialRouteName="ProductDetails"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
       }}>
       <Stack.Screen name="Product" component={Products} />
       <Stack.Screen name="AddProduct" component={AddProducts} />
+      <Stack.Screen name="ProductDetails" component={ProductDetails} />
     </Stack.Navigator>
   );
 

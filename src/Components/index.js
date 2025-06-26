@@ -20,6 +20,7 @@ import SelectInput from './Input/SelectInput';
 // Shimmers
 import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
 import UserCardShimmer from './Shimmers/UserCardShimmer';
+import ProductCardShimmer from './Shimmers/ProductCardShimmer';
 
 export {
   SecondaryHeader,
@@ -33,4 +34,5 @@ export {
   UserCardShimmer,
   UploadInput,
   SelectInput,
+  ProductCardShimmer
 };

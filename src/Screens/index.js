@@ -12,6 +12,7 @@ import Invoice from './AppScreens/Invoice/Invoice';
 // Products
 import Products from './AppScreens/Products/Products';
 import AddProducts from './AppScreens/Products/AddProducts';
+import ProductDetails from './AppScreens/Products/ProductDetails';
 
 // Settings
 import Setting from './AppScreens/Setting/Setting';
@@ -35,4 +36,5 @@ export {
   CreateUser,
   ValidateOtp,
   UserAccount,
+  ProductDetails,
 };

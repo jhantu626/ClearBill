@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {colors} from '../../utils/colors';
 import {fonts} from '../../utils/fonts';
 
-const SearchInput = () => {
+const SearchInput = ({value,setValue,maxLength=100,keyboardType='default',disable=false}) => {
   return (
     <View style={styles.container}>
       <AntDesign name="search1" size={20} />
@@ -12,6 +12,11 @@ const SearchInput = () => {
         style={styles.inputBox}
         placeholder="Search"
         selectionColor={colors.primary}
+        value={value}
+        onChangeText={(text)=>setValue(text)}
+        maxLength={maxLength}
+        keyboardType={keyboardType}
+        editable={!disable}
       />
     </View>
   );

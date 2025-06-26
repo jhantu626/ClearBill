@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -7,41 +8,59 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {
   FloatingAddButton,
   ProductCard,
+  ProductCardShimmer,
   SearchInput,
   SecondaryHeader,
 } from '../../../Components';
 import {fonts} from '../../../utils/fonts';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {productService} from '../../../Services/ProductService';
+import {useAuth} from '../../../Context/AuthContext';
 
 const Products = () => {
   const navigation = useNavigation();
 
-  const restaurantProducts = [
-    {name: 'Margherita Pizza', hsnCode: '996331', price: 250},
-    {name: 'Paneer Butter Masala', hsnCode: '996331', price: 180},
-    {name: 'Chicken Biryani', hsnCode: '996331', price: 220},
-    {name: 'Veg Fried Rice', hsnCode: '996331', price: 150},
-    {name: 'Masala Dosa', hsnCode: '996331', price: 100},
-    {name: 'Tandoori Roti', hsnCode: '996331', price: 20},
-    {name: 'Butter Naan', hsnCode: '996331', price: 30},
-    {name: 'Cold Coffee', hsnCode: '996331', price: 90},
-    {name: 'Gulab Jamun', hsnCode: '996331', price: 60},
-    {name: 'Ice Cream Sundae', hsnCode: '996331', price: 120},
-    {name: 'Chicken Tikka', hsnCode: '996331', price: 200},
-    {name: 'Spring Rolls', hsnCode: '996331', price: 140},
-    {name: 'Caesar Salad', hsnCode: '996331', price: 130},
-    {name: 'Lemon Soda', hsnCode: '996331', price: 40},
-    {name: 'Pav Bhaji', hsnCode: '996331', price: 110},
-  ];
+  // AUTH CONTEXT
+  const {authToken} = useAuth();
+
+  // LOADING STATE
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState('');
 
   const navigateToAddProduct = () => {
     navigation.navigate('AddProduct');
   };
+
+  const fetchProducts = async () => {
+    try {
+      const data = await productService.getProducts({
+        authToken: authToken,
+      });
+      setProducts(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts();
+    }, []),
+  );
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <Layout>
@@ -53,17 +72,39 @@ const Products = () => {
       />
       {/* <SearchInput /> */}
       <FlatList
-        data={restaurantProducts}
-        keyExtractor={(item, index) => item.name + index.toString()}
+        data={isLoading ? [0, 1, 2, 3, 4, 5] : filteredProducts}
+        keyExtractor={(item, index) => 'Product-' + index.toString()}
         contentContainerStyle={styles.contentContainerStyle}
         ListHeaderComponent={() => (
           <View style={{flexDirection: 'column', gap: 10}}>
-            <SearchInput />
+            <SearchInput
+              value={search}
+              setValue={setSearch}
+              disable={isLoading}
+            />
             <Text style={styles.headerText}>All Products</Text>
           </View>
         )}
         showsVerticalScrollIndicator={false}
-        renderItem={(item, index) => <ProductCard />}
+        renderItem={(item, index) =>
+          isLoading ? (
+            <ProductCardShimmer />
+          ) : (
+            <ProductCard product={item.item} />
+          )
+        }
+        ListEmptyComponent={() => {
+          return (
+            !isLoading && (
+              <View style={styles.emptyContainer}>
+                <Image
+                  style={styles.emptyImage}
+                  source={require('./../../../../assets/images/empty.webp')}
+                />
+              </View>
+            )
+          );
+        }}
       />
       <FloatingAddButton onPress={navigateToAddProduct} />
     </Layout>
@@ -79,6 +120,16 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontFamily: fonts.bold,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 50,
+  },
+  emptyImage: {
+    width: 200,
+    height: 200,
   },
 });
 

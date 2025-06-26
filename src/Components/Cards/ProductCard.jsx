@@ -1,27 +1,39 @@
-import {Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {fonts} from '../../utils/fonts';
-import { colors } from '../../utils/colors';
+import {colors} from '../../utils/colors';
+import { FILE_URL } from '../../utils/config';
 
-const ProductCard = () => {
+const ProductCard = ({product}) => {
+  console.log('product', JSON.stringify(product));
   return (
-    <Pressable style={styles.container} onPress={()=>{
-        console.log("fuck you");
-    }}>
+    <Pressable
+      style={styles.container}
+      onPress={() => {
+        console.log('fuck you');
+      }}>
       <View style={styles.leftContainer}>
         <Image
-          source={require('./../../../assets/images/product.png')}
+          source={{uri: `${FILE_URL}/product/${product.logo}`}}
           style={styles.productImage}
         />
         <View>
-          <Text style={styles.productName}>Product Name</Text>
-          <Text style={styles.hsnCode}>HSN CODE: 14589248</Text>
+          <Text style={styles.productName}>{product.name}</Text>
+          <Text style={styles.hsnCode}>HSN CODE: {product.hsnCode || 'NA'}</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={()=>{
-        console.log("fuck you beach")
-      }}>
+      <TouchableOpacity
+        onPress={() => {
+          console.log('fuck you beach');
+        }}>
         <FontAwesome name="edit" size={24} color="black" />
       </TouchableOpacity>
     </Pressable>
@@ -48,13 +60,13 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 15,
     fontFamily: fonts.semibold,
-    color: colors.inputBackground
+    color: colors.inputBackground,
   },
-  hsnCode:{
+  hsnCode: {
     fontSize: 12,
     fontFamily: fonts.regular,
-    color: colors.inputBackground+"80"
-  }
+    color: colors.inputBackground + '80',
+  },
 });
 
 export default ProductCard;
