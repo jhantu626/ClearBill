@@ -10,15 +10,19 @@ import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
-import { FILE_URL } from '../../utils/config';
+import {FILE_URL} from '../../utils/config';
+import {useNavigation} from '@react-navigation/native';
 
 const ProductCard = ({product}) => {
   console.log('product', JSON.stringify(product));
+  const navigation = useNavigation();
   return (
     <Pressable
       style={styles.container}
       onPress={() => {
-        console.log('fuck you');
+        navigation.navigate('ProductDetails', {
+          product: product,
+        });
       }}>
       <View style={styles.leftContainer}>
         <Image
@@ -27,7 +31,9 @@ const ProductCard = ({product}) => {
         />
         <View>
           <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.hsnCode}>HSN CODE: {product.hsnCode || 'NA'}</Text>
+          <Text style={styles.hsnCode}>
+            HSN CODE: {product.hsnCode || 'NA'}
+          </Text>
         </View>
       </View>
       <TouchableOpacity

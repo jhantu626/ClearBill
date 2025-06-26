@@ -48,7 +48,7 @@ const App = () => {
 
   const ProductStack = () => (
     <Stack.Navigator
-      initialRouteName="ProductDetails"
+      initialRouteName="Product"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',

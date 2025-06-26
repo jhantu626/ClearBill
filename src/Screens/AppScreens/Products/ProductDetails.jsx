@@ -11,8 +11,13 @@ import Layout from '../../Layout/Layout';
 import {SecondaryHeader} from '../../../Components';
 import {colors} from '../../../utils/colors';
 import {fonts} from '../../../utils/fonts';
+import {useRoute} from '@react-navigation/native';
+import { FILE_URL } from '../../../utils/config';
 
 const ProductDetails = () => {
+  const route = useRoute();
+  console.log(route);
+  const {product} = route.params || {};
   return (
     <Layout>
       <SecondaryHeader title="Product Details" navigation="back" />
@@ -25,46 +30,52 @@ const ProductDetails = () => {
         <View style={styles.imageContainer}>
           <Image
             style={styles.productImage}
-            source={require('./../../../../assets/images/product.png')}
+            source={{uri: FILE_URL+`/product/${product.logo}`}}
           />
         </View>
-        <Text style={styles.nameText}>Product Name</Text>
-        <Text style={styles.descriptionText}>Product Description</Text>
-        <Text style={styles.discountText}>₹250</Text>
-        <Text style={styles.discountText}>10% OFF</Text>
+        <Text style={styles.nameText}>{product.name}</Text>
+        <Text style={styles.descriptionText}>
+          {product.description || 'NA'}
+        </Text>
+        <Text style={styles.discountText}>₹{product.price}</Text>
+        <Text style={styles.discountText}>{product.discount}% OFF</Text>
         <View style={styles.productInformationContainer}>
           <Text style={styles.titleText}>Product Information</Text>
           <View style={styles.divider} />
           <View style={styles.subInformationContainer}>
             <View>
               <Text style={styles.informationTitle}>Taxable</Text>
-              <Text style={styles.valueText}>True</Text>
+              <Text style={styles.valueText}>
+                {product.isTaxable ? 'GST' : 'Non-GST'}
+              </Text>
             </View>
             <View>
               <Text style={styles.informationTitle}>HSN Code</Text>
-              <Text style={styles.valueText}>123456</Text>
+              <Text style={styles.valueText}>
+                {product.isTaxable ? product.hsnCode : 'NA'}
+              </Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View style={styles.subInformationContainer}>
             <View>
               <Text style={styles.informationTitle}>CGst</Text>
-              <Text style={styles.valueText}>9%</Text>
+              <Text style={styles.valueText}>{product.cgst}%</Text>
             </View>
             <View>
               <Text style={styles.informationTitle}>SGst</Text>
-              <Text style={styles.valueText}>9%</Text>
+              <Text style={styles.valueText}>{product.sgst}%</Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View style={styles.subInformationContainer}>
             <View>
               <Text style={styles.informationTitle}>IGst</Text>
-              <Text style={styles.valueText}>0%</Text>
+              <Text style={styles.valueText}>{product.igst}%</Text>
             </View>
             <View>
               <Text style={styles.informationTitle}>Unit</Text>
-              <Text style={styles.valueText}>PCS</Text>
+              <Text style={styles.valueText}>{product.unitType}</Text>
             </View>
           </View>
         </View>
@@ -136,13 +147,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 50
+    marginBottom: 50,
   },
-  btnText:{
+  btnText: {
     fontSize: 16,
     fontFamily: fonts.bold,
-    color: '#fff'
-  }
+    color: '#fff',
+  },
 });
 
 export default ProductDetails;
