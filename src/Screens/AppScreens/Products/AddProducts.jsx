@@ -21,23 +21,49 @@ import {
 import {fonts} from '../../../utils/fonts';
 import {productService} from '../../../Services/ProductService';
 import {useAuth} from '../../../Context/AuthContext';
+import {StackActions, useNavigation, useRoute} from '@react-navigation/native';
 
 const AddProducts = () => {
   // TOKEN
   const {authToken} = useAuth();
 
+  // NAVIGATION
+  const navigation = useNavigation();
+
+  // ROUTE
+  const route = useRoute();
+  const {mode, product} = route.params || {mode: 'create'};
+
   // STATE VARIABLES
-  const [name, setName] = useState('');
-  const [unitType, setUnityType] = useState('PCS');
-  const [price, setPrice] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [gstType, setGstType] = useState('Non-GST');
-  const [hsnCode, setHsnCode] = useState('');
-  const [cGst, setCGst] = useState(0);
-  const [sGst, setSGst] = useState(0);
-  const [iGst, setIGst] = useState(0);
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null);
+  const [name, setName] = useState(mode === 'edit' ? product.name : '');
+  const [unitType, setUnityType] = useState(
+    mode === 'edit' ? product.unitType : 'PCS',
+  );
+  const [price, setPrice] = useState(
+    mode === 'edit' ? product.price.toString() : 0,
+  );
+  const [discount, setDiscount] = useState(
+    mode === 'edit' ? product.discount.toString() : 0,
+  );
+  const [gstType, setGstType] = useState(
+    mode === 'edit' ? (product.isTaxable ? 'GST' : 'Non-GST') : 'Non-GST',
+  );
+  const [hsnCode, setHsnCode] = useState(
+    mode === 'edit' ? product.hsnCode : '',
+  );
+  const [cGst, setCGst] = useState(
+    mode === 'edit' ? product.cgst.toString() : 0,
+  );
+  const [sGst, setSGst] = useState(
+    mode === 'edit' ? product.sgst.toString() : 0,
+  );
+  const [iGst, setIGst] = useState(
+    mode === 'edit' ? product.igst.toString() : 0,
+  );
+  const [description, setDescription] = useState(
+    mode === 'edit' ? product.description : '',
+  );
+  const [image, setImage] = useState(mode === 'edit' ? product.logo : null);
 
   // ERROR STATE
   const [error, setError] = useState({
@@ -110,48 +136,66 @@ const AddProducts = () => {
 
   const handleSubmit = async () => {
     if (validation()) {
-      console.log({
-        name,
-        unitType,
-        price,
-        discount,
-        gstType,
-        hsnCode,
-        cGst,
-        sGst,
-        iGst,
-        description,
-        image,
-      });
-
       try {
         setIsLoading(true);
-        const data = await productService.addProduct({
-          authToken: authToken,
-          name: name,
-          description: description,
-          price: price,
-          discount: discount ? discount : 0,
-          isTaxable: gstType === 'GST' ? true : false,
-          hsnCode: hsnCode,
-          unitType: unitType,
-          cgst: cGst ? cGst : 0,
-          sgst: sGst ? sGst : 0,
-          igst: iGst ? iGst : 0,
-          logo: image?.path
-            ? {
-                uri: image.path,
-                type: image.mime,
-                name: image.filename,
-              }
-            : null,
-        });
-        console.log(data);
-        if (data?.status) {
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-          resetForm();
+        if (mode === 'create') {
+          const data = await productService.addProduct({
+            authToken: authToken,
+            name: name,
+            description: description,
+            price: price,
+            discount: discount ? discount : 0,
+            isTaxable: gstType === 'GST' ? true : false,
+            hsnCode: hsnCode,
+            unitType: unitType,
+            cgst: cGst ? cGst : 0,
+            sgst: sGst ? sGst : 0,
+            igst: iGst ? iGst : 0,
+            logo: image?.path
+              ? {
+                  uri: image.path,
+                  type: image.mime,
+                  name: image.filename,
+                }
+              : null,
+          });
+          if (data?.status) {
+            ToastAndroid.show(data.message, ToastAndroid.LONG);
+            resetForm();
+          } else {
+            ToastAndroid.show(data.message, ToastAndroid.LONG);
+          }
         } else {
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
+          const payload = {
+            authToken: authToken,
+            id: product?.id,
+            name: name,
+            description: description,
+            isTaxable: gstType === 'GST' ? true : false,
+            hsnCode: gstType === 'GST' ? hsnCode : '',
+            unitType: unitType,
+            price: price,
+            discount: discount,
+            igst: gstType === 'GST' ? iGst : 0,
+            cgst: gstType === 'GST' ? cGst : 0,
+            sgst: gstType === 'GST' ? sGst : 0,
+          };
+          let data = null;
+          if (image === product.logo) {
+            data = await productService.updateProduct(payload);
+          } else {
+            const withImagepayload = {
+              ...payload,
+              image: {uri: image.path, type: image.mime, name: image.filename},
+            };
+            data = await productService.updateProductWithImage(withImagepayload);
+          }
+          if (data.status) {
+            ToastAndroid.show(data.message, ToastAndroid.LONG);
+            navigation.dispatch(StackActions.replace('Product'));
+          } else {
+            ToastAndroid.show(data.message, ToastAndroid.LONG);
+          }
         }
       } catch (error) {
         console.log(error);
@@ -260,7 +304,7 @@ const AddProducts = () => {
         <UploadInput
           title={'Upload Product Name'}
           subTitle={'Tap to upload an image of the product'}
-          value={image}
+          value={image ? (image.path ? image : '/product/' + image) : image}
           setValue={setImage}
         />
         {error.imageError && (
@@ -272,6 +316,8 @@ const AddProducts = () => {
           disabled={isLoading}>
           {isLoading ? (
             <ActivityIndicator size={'large'} color={'#fff'} />
+          ) : mode === 'edit' ? (
+            <Text style={styles.btnText}>UPDATE</Text>
           ) : (
             <Text style={styles.btnText}>Add Product</Text>
           )}

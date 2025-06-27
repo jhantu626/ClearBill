@@ -38,7 +38,7 @@ const ProductCard = ({product}) => {
       </View>
       <TouchableOpacity
         onPress={() => {
-          console.log('fuck you beach');
+          navigation.navigate('AddProduct', {product: product, mode: 'edit'});
         }}>
         <FontAwesome name="edit" size={24} color="black" />
       </TouchableOpacity>

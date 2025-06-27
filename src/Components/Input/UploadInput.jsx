@@ -54,7 +54,7 @@ const UploadInput = ({title, subTitle, value = null, setValue}) => {
           source={{
             uri: value?.path
               ? value.path
-              : FILE_URL + '/business/logo/' + value,
+              : FILE_URL + value,
           }}
           style={{width: '100%', height: '100%', borderRadius: 8}}
           resizeMode="contain"

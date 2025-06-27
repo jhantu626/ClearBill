@@ -48,7 +48,6 @@ const AddBusiness = () => {
     mode === 'edit' ? route.params.business.logo : null,
   );
 
-
   // Error State
   const [error, setError] = useState({
     nameError: '',
@@ -57,7 +56,6 @@ const AddBusiness = () => {
     stateCodeError: '',
     logoError: '',
   });
-
 
   // Loading State
   const [isLoading, setIsLoading] = useState(false);
@@ -160,12 +158,22 @@ const AddBusiness = () => {
         }
         return;
       }
-      
+
       if (mode === 'edit') {
-        console.log("edit mode")
-        if(route.params.name===name && route.params.address===address && route.params.gstNo===gstNo && route.params.stateCode===Integer.parseInt(stateCode) &&  route.params.logo===logo){
-          ToastAndroid.show("No changes made", ToastAndroid.TOP, ToastAndroid.LONG);
-          return
+        console.log('edit mode');
+        if (
+          route.params.name === name &&
+          route.params.address === address &&
+          route.params.gstNo === gstNo &&
+          route.params.stateCode === Integer.parseInt(stateCode) &&
+          route.params.logo === logo
+        ) {
+          ToastAndroid.show(
+            'No changes made',
+            ToastAndroid.TOP,
+            ToastAndroid.LONG,
+          );
+          return;
         }
         setIsLoading(true);
         try {
@@ -182,11 +190,15 @@ const AddBusiness = () => {
                   type: logo.mime,
                   name: logo.filename,
                 }
-              : null
+              : null,
           });
-          console.log(data)
-          if(data.status){
-            ToastAndroid.show(data.message, ToastAndroid.TOP, ToastAndroid.LONG);
+          console.log(data);
+          if (data.status) {
+            ToastAndroid.show(
+              data.message,
+              ToastAndroid.TOP,
+              ToastAndroid.LONG,
+            );
             navigation.dispatch(StackActions.replace('Setting'));
           }
         } catch (error) {
@@ -194,7 +206,7 @@ const AddBusiness = () => {
         } finally {
           setIsLoading(false);
         }
-        return
+        return;
       }
     } else {
       console.log(error);
@@ -245,7 +257,7 @@ const AddBusiness = () => {
         <UploadInput
           title={'Upload Business Logo'}
           subTitle={'Tap to upload an image of the business logo'}
-          value={logo}
+          value={logo?.path ? logo : '/business/logo/' + logo}
           setValue={setLogo}
         />
         {error.logoError && (

@@ -11,10 +11,13 @@ import Layout from '../../Layout/Layout';
 import {SecondaryHeader} from '../../../Components';
 import {colors} from '../../../utils/colors';
 import {fonts} from '../../../utils/fonts';
-import {useRoute} from '@react-navigation/native';
-import { FILE_URL } from '../../../utils/config';
+import {StackActions, useNavigation, useRoute} from '@react-navigation/native';
+import {FILE_URL} from '../../../utils/config';
 
 const ProductDetails = () => {
+  // NAVIGATION
+  const navigation = useNavigation();
+
   const route = useRoute();
   console.log(route);
   const {product} = route.params || {};
@@ -30,7 +33,7 @@ const ProductDetails = () => {
         <View style={styles.imageContainer}>
           <Image
             style={styles.productImage}
-            source={{uri: FILE_URL+`/product/${product.logo}`}}
+            source={{uri: FILE_URL + `/product/${product.logo}`}}
           />
         </View>
         <Text style={styles.nameText}>{product.name}</Text>
@@ -79,7 +82,11 @@ const ProductDetails = () => {
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.editBtn}>
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => {
+            navigation.navigate('AddProduct', {product: product, mode: 'edit'});
+          }}>
           <Text style={styles.btnText}>Edit</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -143,7 +150,7 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: colors.primary,
-    padding: 15,
+    padding: 10,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
