@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useMemo, useRef} from 'react';
 import Layout from '../../Layout/Layout';
 import {
   DefaultInput,
@@ -14,60 +14,103 @@ import {
 } from '../../../Components';
 import {colors} from '../../../utils/colors';
 import {fonts} from '../../../utils/fonts';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 
 const CreateInvoice = () => {
+  // REF VAR'S
+  const bottomSheetRef = useRef(null);
+
+  // BOTTOM SHEET OPEN
+  const handleOpenItemBottomSheet = () => {
+    bottomSheetRef.current.expand();
+  };
+
+  // FOR BOTTOM SHEET BACKDROP
+  const renderBackdrop = useMemo(
+    () => props =>
+      (
+        <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          opacity={0.8}
+        />
+      ),
+    [],
+  );
+
   return (
-    <Layout>
-      <SecondaryHeader navigation="back" title="Create Invoice" />
-      <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
-        <DefaultInput placeholder="Customer Number" />
-        <DefaultInput placeholder="Customer Name" />
-        <DefaultInput placeholder="GST No(Optional)" />
-        <View style={styles.itemsContainer}>
-          <Text style={styles.itemTitle}>Items</Text>
-          <View style={styles.selectedItemsContainer}>
-            <View style={styles.leftContainer}>
-              <Text style={styles.itemText}>Product 1</Text>
-              <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <Layout>
+        <SecondaryHeader navigation="back" title="Create Invoice" />
+        <ScrollView style={{flex: 1}} contentContainerStyle={styles.container}>
+          <DefaultInput placeholder="Customer Number" />
+          <DefaultInput placeholder="Customer Name" />
+          <DefaultInput placeholder="GST No(Optional)" />
+          <View style={styles.itemsContainer}>
+            <Text style={styles.itemTitle}>Items</Text>
+            <View style={styles.selectedItemsContainer}>
+              <View style={styles.leftContainer}>
+                <Text style={styles.itemText}>Product 1</Text>
+                <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
+              </View>
+              <Text style={styles.priceText}>₹100</Text>
             </View>
-            <Text style={styles.priceText}>₹100</Text>
-          </View>
-          <View style={styles.selectedItemsContainer}>
-            <View style={styles.leftContainer}>
-              <Text style={styles.itemText}>Product 1</Text>
-              <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
+            <View style={styles.selectedItemsContainer}>
+              <View style={styles.leftContainer}>
+                <Text style={styles.itemText}>Product 1</Text>
+                <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
+              </View>
+              <Text style={styles.priceText}>₹100</Text>
             </View>
-            <Text style={styles.priceText}>₹100</Text>
+            <TouchableOpacity
+              style={styles.addItemBtn}
+              onPress={handleOpenItemBottomSheet}>
+              <Text style={styles.addItemBtnText}>Add Item</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.addItemBtn}>
-            <Text style={styles.addItemBtnText}>Add Item</Text>
+          <Text style={styles.itemTitle}>Summary</Text>
+          <View style={styles.summaryContainer}>
+            <View style={styles.subSummaryCOntainer}>
+              <Text style={styles.summaryText}>Subtotal</Text>
+              <Text style={styles.summaryText}>₹150</Text>
+            </View>
+            <View style={styles.subSummaryCOntainer}>
+              <Text style={styles.summaryText}>Discount</Text>
+              <Text style={styles.summaryText}>₹150</Text>
+            </View>
+            <View style={styles.subSummaryCOntainer}>
+              <Text style={styles.summaryText}>CGST/SGST</Text>
+              <Text style={styles.summaryText}>₹28</Text>
+            </View>
+            <PrimaryDivider />
+            <View style={styles.subSummaryCOntainer}>
+              <Text style={styles.summaryText}>Subtotal</Text>
+              <Text style={styles.summaryText}>₹150</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.createInvoiceBtn}>
+            <Text style={styles.createInvoiceBtnText}>Create Invoice</Text>
           </TouchableOpacity>
-        </View>
-        <Text style={styles.itemTitle}>Summary</Text>
-        <View style={styles.summaryContainer}>
-          <View style={styles.subSummaryCOntainer}>
-            <Text style={styles.summaryText}>Subtotal</Text>
-            <Text style={styles.summaryText}>₹150</Text>
-          </View>
-          <View style={styles.subSummaryCOntainer}>
-            <Text style={styles.summaryText}>Discount</Text>
-            <Text style={styles.summaryText}>₹150</Text>
-          </View>
-          <View style={styles.subSummaryCOntainer}>
-            <Text style={styles.summaryText}>CGST/SGST</Text>
-            <Text style={styles.summaryText}>₹28</Text>
-          </View>
-          <PrimaryDivider />
-          <View style={styles.subSummaryCOntainer}>
-            <Text style={styles.summaryText}>Subtotal</Text>
-            <Text style={styles.summaryText}>₹150</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.createInvoiceBtn}>
-          <Text style={styles.createInvoiceBtnText}>Create Invoice</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </Layout>
+        </ScrollView>
+      </Layout>
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={useMemo(() => ['70%'], [])}
+        backdropComponent={renderBackdrop}
+        animationConfigs={{
+          duration: 300,
+        }}
+        >
+        <BottomSheetView>
+          <Text>This is bottom sheet</Text>
+        </BottomSheetView>
+      </BottomSheet>
+    </GestureHandlerRootView>
   );
 };
 
