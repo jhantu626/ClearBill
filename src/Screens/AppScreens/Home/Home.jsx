@@ -88,7 +88,7 @@ const Home = () => {
         </View>
         <Text style={styles.invoiceText}>Recent Invoices</Text>
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
-          <InvoiceCard key={index} isMoney={false}/>
+          <InvoiceCard key={index + 'invoice'} />
         ))}
       </ScrollView>
     </Layout>

@@ -22,6 +22,9 @@ import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
 import UserCardShimmer from './Shimmers/UserCardShimmer';
 import ProductCardShimmer from './Shimmers/ProductCardShimmer';
 
+// Dividers
+import PrimaryDivider from './Dividers/PrimaryDivider';
+
 export {
   SecondaryHeader,
   DefaultInput,
@@ -34,5 +37,6 @@ export {
   UserCardShimmer,
   UploadInput,
   SelectInput,
-  ProductCardShimmer
+  ProductCardShimmer,
+  PrimaryDivider,
 };

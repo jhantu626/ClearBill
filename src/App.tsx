@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {
   AddBusiness,
   AddProducts,
+  CreateInvoice,
   CreateUser,
   Home,
   Invoice,
@@ -46,6 +47,18 @@ const App = () => {
     );
   };
 
+  const InoviceStack = () => (
+    <Stack.Navigator
+      initialRouteName="CreateInvoice"
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}>
+      <Stack.Screen name="Invoice" component={Invoice} />
+      <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
+    </Stack.Navigator>
+  );
+
   const ProductStack = () => (
     <Stack.Navigator
       initialRouteName="Product"
@@ -80,7 +93,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Product"
+        initialRouteName="Invoice"
         backBehavior="history"
         screenOptions={{
           headerShown: false,
@@ -106,7 +119,7 @@ const App = () => {
         />
         <Tab.Screen
           name="Invoice"
-          component={Invoice}
+          component={InoviceStack}
           options={{
             tabBarIcon: ({color}) => (
               <Ionicons name="receipt-outline" size={24} color={color} />

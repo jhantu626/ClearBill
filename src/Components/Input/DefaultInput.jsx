@@ -14,7 +14,7 @@ const DefaultInput = ({
   disabled = false,
 }) => {
   return (
-    <View style={[styles.container, {height: height}]}>
+    <View style={[styles.container, {minHeight: height}]}>
       <TextInput
         style={styles.inputContainer}
         value={value}
@@ -26,6 +26,7 @@ const DefaultInput = ({
         placeholderTextColor={'#61758A'}
         maxLength={maxLength}
         editable={!disabled}
+        multiline={true}
       />
     </View>
   );
@@ -46,6 +47,8 @@ const styles = StyleSheet.create({
     height: '100%',
     fontSize: 14,
     fontFamily: fonts.medium,
+    flexWrap: 'wrap',
+    height: 'auto'
   },
 });
 

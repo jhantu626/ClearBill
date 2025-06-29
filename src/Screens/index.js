@@ -8,6 +8,7 @@ import Home from './AppScreens/Home/Home';
 
 // Invoice
 import Invoice from './AppScreens/Invoice/Invoice';
+import CreateInvoice from './AppScreens/Invoice/CreateInvoice';
 
 // Products
 import Products from './AppScreens/Products/Products';
@@ -37,4 +38,5 @@ export {
   ValidateOtp,
   UserAccount,
   ProductDetails,
+  CreateInvoice
 };

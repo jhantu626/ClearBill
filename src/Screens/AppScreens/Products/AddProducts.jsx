@@ -102,7 +102,7 @@ const AddProducts = () => {
       });
       ToastAndroid.show('Hsn Code is Invalid', ToastAndroid.SHORT);
       return false;
-    } else if (gstType === 'GST' && !cGst && !sGst && !iGst) {
+    } else if (gstType === 'GST' && (!cGst || cGst === '0') && (!sGst || sGst === '0') && (!iGst || iGst === '0')) {
       setError({
         cGstError: 'Atlease one of CGST, SGST, IGST is Required',
       });
@@ -188,7 +188,9 @@ const AddProducts = () => {
               ...payload,
               image: {uri: image.path, type: image.mime, name: image.filename},
             };
-            data = await productService.updateProductWithImage(withImagepayload);
+            data = await productService.updateProductWithImage(
+              withImagepayload,
+            );
           }
           if (data.status) {
             ToastAndroid.show(data.message, ToastAndroid.LONG);
@@ -300,6 +302,7 @@ const AddProducts = () => {
           placeholder="Product Description(optional)"
           value={description}
           setValue={setDescription}
+          maxLength={100}
         />
         <UploadInput
           title={'Upload Product Name'}
