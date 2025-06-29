@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.1.6",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-google-signin/google-signin": "^14.0.1",
     "@react-navigation/bottom-tabs": "^7.3.13",
@@ -21,8 +22,9 @@
     "react-native": "0.79.2",
     "react-native-chart-kit": "^6.12.0",
     "react-native-dotenv": "^3.4.11",
-    "react-native-gesture-handler": "^2.25.0",
+    "react-native-gesture-handler": "^2.26.0",
     "react-native-image-crop-picker": "^0.50.1",
+    "react-native-reanimated": "^3.18.0",
     "react-native-safe-area-context": "^5.4.1",
     "react-native-screens": "^4.11.1",
     "react-native-svg": "^15.12.0",
