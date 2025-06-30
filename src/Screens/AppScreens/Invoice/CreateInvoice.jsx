@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {
   DefaultInput,
@@ -25,6 +25,9 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import {FILE_URL} from '../../../utils/config';
 import Entypo from 'react-native-vector-icons/Entypo';
+import {productService} from '../../../Services/ProductService';
+import {useAuth} from '../../../Context/AuthContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 // Items
 const data = [
@@ -271,11 +274,26 @@ const data = [
 ];
 
 const CreateInvoice = () => {
+  // CONTEXT
+  const {authToken} = useAuth();
+
   // REF VAR'S
   const bottomSheetRef = useRef(null);
-  const [products, setProducts] = useState(
-    data.map(item => ({...item, quantity: 0})),
-  );
+  const [products, setProducts] = useState([]);
+  const [subTotal, setSubTotal] = useState(0);
+  const [totalGst, setTotalGst] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+
+  const fetchInitialProductData = async () => {
+    try {
+      const data = await productService.getProducts({authToken: authToken});
+      setProducts(prev => {
+        return data.map(item => ({...item, quantity: 0}));
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // BOTTOM SHEET OPEN
   const handleOpenItemBottomSheet = () => {
@@ -304,7 +322,54 @@ const CreateInvoice = () => {
     return products.filter(item =>
       item.name.toLowerCase().includes(searchQuery),
     );
-  }, [searchQuery]);
+  }, [searchQuery, products]);
+
+  // INCREASE PRODUCTS QUANTITY
+  const increaseProductQuantity = id => {
+    setProducts(prev =>
+      prev.map(item =>
+        item.id === id ? {...item, quantity: item.quantity + 1} : item,
+      ),
+    );
+  };
+  const decreaseProductQuantity = id => {
+    setProducts(prev =>
+      prev.map(item =>
+        item.id === id
+          ? {...item, quantity: item.quantity > 0 && item.quantity - 1}
+          : item,
+      ),
+    );
+  };
+
+  // HOOKS Functions
+  useFocusEffect(
+    useCallback(() => {
+      fetchInitialProductData();
+    }, []),
+  );
+
+  useEffect(() => {
+    setTotalDiscount(0);
+    setTotalGst(0);
+    setSubTotal(0);
+    products
+      .filter(item => item.quantity > 0)
+      .forEach(item => {
+        setSubTotal(prev => prev + item.price * item.quantity);
+        const discountAmount = item.price * (item.discount / 100);
+        setTotalDiscount(prev => prev + discountAmount * item.quantity);
+        setTotalGst(
+          prev =>
+            prev +
+            (item.price - discountAmount) *
+              item.quantity *
+              (item.igst !== 0
+                ? item.igst / 100
+                : (item.cgst + item.sgst) / 100),
+        );
+      });
+  }, [products]);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -316,20 +381,28 @@ const CreateInvoice = () => {
           <DefaultInput placeholder="GST No(Optional)" />
           <View style={styles.itemsContainer}>
             <Text style={styles.itemTitle}>Items</Text>
-            <View style={styles.selectedItemsContainer}>
-              <View style={styles.leftContainer}>
-                <Text style={styles.itemText}>Product 1</Text>
-                <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
-              </View>
-              <Text style={styles.priceText}>₹100</Text>
-            </View>
-            <View style={styles.selectedItemsContainer}>
-              <View style={styles.leftContainer}>
-                <Text style={styles.itemText}>Product 1</Text>
-                <Text style={styles.itemSubText}>Quantity: 2, Rate: 50</Text>
-              </View>
-              <Text style={styles.priceText}>₹100</Text>
-            </View>
+            {products
+              .filter(item => item.quantity > 0)
+              .map((item, index) => {
+                return (
+                  <View
+                    style={styles.selectedItemsContainer}
+                    key={index + '-selectedProducts'}>
+                    <View style={styles.leftContainer}>
+                      <Text style={styles.itemText}>
+                        {item.name.slice(0, 17)}
+                        {item.name.length > 17 && '...'}
+                      </Text>
+                      <Text style={styles.itemSubText}>
+                        Quantity: {item.quantity}, Rate: {item.price}
+                      </Text>
+                    </View>
+                    <Text style={styles.priceText}>
+                      ₹{item.quantity * item.price}
+                    </Text>
+                  </View>
+                );
+              })}
             <TouchableOpacity
               style={styles.addItemBtn}
               onPress={handleOpenItemBottomSheet}>
@@ -340,20 +413,24 @@ const CreateInvoice = () => {
           <View style={styles.summaryContainer}>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Subtotal</Text>
-              <Text style={styles.summaryText}>₹150</Text>
+              <Text style={styles.summaryText}>₹{subTotal}</Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Discount</Text>
-              <Text style={styles.summaryText}>₹150</Text>
+              <Text style={styles.summaryText}>
+                ₹{totalDiscount.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
-              <Text style={styles.summaryText}>CGST/SGST</Text>
-              <Text style={styles.summaryText}>₹28</Text>
+              <Text style={styles.summaryText}>CGST+SGST/IGST</Text>
+              <Text style={styles.summaryText}>₹{totalGst.toFixed(2)}</Text>
             </View>
             <PrimaryDivider />
             <View style={styles.subSummaryCOntainer}>
-              <Text style={styles.summaryText}>Subtotal</Text>
-              <Text style={styles.summaryText}>₹150</Text>
+              <Text style={styles.summaryText}>Total</Text>
+              <Text style={styles.summaryText}>
+                ₹{(subTotal - totalDiscount + totalGst).toFixed(2)}
+              </Text>
             </View>
           </View>
           <TouchableOpacity style={styles.createInvoiceBtn}>
@@ -365,6 +442,7 @@ const CreateInvoice = () => {
         ref={bottomSheetRef}
         snapPoints={useMemo(() => ['70%'], [])}
         backdropComponent={renderBackdrop}
+        index={-1}
         animationConfigs={{
           duration: 300,
         }}>
@@ -398,9 +476,7 @@ const CreateInvoice = () => {
                   <TouchableOpacity
                     style={styles.increaseDecreaseBtn}
                     onPress={() => {
-                      if (data[index]?.quantity > 0) {
-                        item.quantity = item.quantity - 1;
-                      }
+                      decreaseProductQuantity(item.id);
                     }}>
                     <Entypo name="minus" />
                   </TouchableOpacity>
@@ -415,7 +491,7 @@ const CreateInvoice = () => {
                   <TouchableOpacity
                     style={styles.increaseDecreaseBtn}
                     onPress={() => {
-                      data[index].quantity = data[index].quantity + 1;
+                      increaseProductQuantity(item.id);
                     }}>
                     <Entypo name="plus" />
                   </TouchableOpacity>
