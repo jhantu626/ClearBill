@@ -14,7 +14,6 @@ import {FILE_URL} from '../../utils/config';
 import {useNavigation} from '@react-navigation/native';
 
 const ProductCard = ({product}) => {
-  console.log('product', JSON.stringify(product));
   const navigation = useNavigation();
   return (
     <Pressable
