@@ -44,7 +44,6 @@ const Products = () => {
         authToken: authToken,
       });
       setProducts(data);
-      console.log(data);
     } catch (error) {
       console.log(error);
     } finally {
