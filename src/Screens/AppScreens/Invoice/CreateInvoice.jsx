@@ -30,11 +30,10 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {productService} from '../../../Services/ProductService';
 import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
-import {isValidIndianNumber} from '../../../utils/validations';
+import {isValidIndianNumber, isValidName} from '../../../utils/validations';
 import {customerService} from '../../../Services/CustomerService';
 import {invoiceService} from '../../../Services/InvoiceService';
-import {printableTemplate} from '../../../utils/InvoiceTemplate';
-import RNPrint from 'react-native-print';
+import {printableTemplate, printBill} from '../../../utils/InvoiceTemplate';
 
 const CreateInvoice = () => {
   // CONTEXT
@@ -177,47 +176,30 @@ const CreateInvoice = () => {
     }
   }, [customerMobile]);
 
-  // Print Bill
-  const printBill = async printableInvoice => {
-    try {
-      let printerUrl = null;
-      if (RNPrint.selectPrinter) {
-        const selectedPrinter = await RNPrint.selectPrinter();
-        printerUrl = selectedPrinter?.url;
-        console.log(
-          'Selected Printer:',
-          JSON.stringify(selectedPrinter, null, 2),
-        );
-      } else {
-        console.warn(
-          'selectPrinter not available, using default printer or manual URL',
-        );
-        printerUrl = 'ipp://192.168.1.100'; // Replace with your printer’s IP
-      }
-
-      if (!printerUrl) {
-        console.error('No valid printer URL found');
-        return;
-      }
-
-      const html = printableTemplate(printableInvoice);
-      if (!html || typeof html !== 'string') {
-        console.error('Invalid HTML generated from printableTemplate');
-        return;
-      }
-
-      await RNPrint.print({
-        printerURL: printerUrl,
-        html,
+  // Validations
+  const validation = () => {
+    if (!customerMobile) {
+      setError({
+        mobileError: 'Mobile Number is Required',
       });
-      console.log('Print job sent successfully');
-    } catch (error) {
-      console.error('Printing error:', error.message);
+      return false;
+    } else if (!customerName || !isValidName(customerName)) {
+      setError({
+        nameError: 'Name is Invalid',
+      });
+      return false;
+    } else {
+      setError({
+        mobileError: '',
+        nameError: '',
+      });
     }
+    return true;
   };
 
   // HANDLE CREATE INVOICE
   const handleSubmit = async () => {
+    if (!validation()) return;
     try {
       setIsLoading(true);
       const items = products
@@ -289,6 +271,9 @@ const CreateInvoice = () => {
             value={customerName}
             setValue={setCustomerName}
           />
+          {error.nameError && (
+            <Text style={styles.errorText}>{error.nameError}</Text>
+          )}
           <DefaultInput placeholder="GST No(Optional)" />
           <View style={styles.itemsContainer}>
             <Text style={styles.itemTitle}>Items</Text>
@@ -486,7 +471,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
   },
   createInvoiceBtn: {
-    paddingVertical: 15,
+    paddingVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
