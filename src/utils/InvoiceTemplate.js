@@ -1,13 +1,17 @@
 import {convertInvoiceDate} from './util';
+import RNPrint from 'react-native-print';
+
 
 const printableTemplate = invoice => {
   // Format currency values
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return '₹' + parseFloat(amount).toFixed(2);
   };
 
   // Generate item rows
-  const itemRow = invoice.items.map(item => `
+  const itemRow = invoice.items
+    .map(
+      item => `
     <tr class="item-row">
       <td class="col-item">
         ${item.name.length > 25 ? item.name.slice(0, 25) + '...' : item.name}
@@ -17,7 +21,9 @@ const printableTemplate = invoice => {
       <td class="col-rate">${formatCurrency(item.price)}</td>
       <td class="col-amt">${formatCurrency(item.price * item.quantity)}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join('');
 
   // Barcode data
   const barcodeData = `${invoice.name}-${invoice.id}`;
@@ -170,7 +176,9 @@ const printableTemplate = invoice => {
   </div>
   
   <div class="barcode-container">
-    <img class="barcode" alt="Barcode" src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(barcodeData)}&code=Code128&dpi=96&qunit=Mm&quiet=0" />
+    <img class="barcode" alt="Barcode" src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
+      barcodeData,
+    )}&code=Code128&dpi=96&qunit=Mm&quiet=0" />
   </div>
   
   <div class="divider"></div>
@@ -231,6 +239,42 @@ const printableTemplate = invoice => {
   return template;
 };
 
+const printBill = async printableInvoice => {
+  try {
+    let printerUrl = null;
+    if (RNPrint.selectPrinter) {
+      const selectedPrinter = await RNPrint.selectPrinter();
+      printerUrl = selectedPrinter?.url;
+      console.log(
+        'Selected Printer:',
+        JSON.stringify(selectedPrinter, null, 2),
+      );
+    } else {
+      console.warn(
+        'selectPrinter not available, using default printer or manual URL',
+      );
+      printerUrl = 'ipp://192.168.1.100'; // Replace with your printer’s IP
+    }
 
+    if (!printerUrl) {
+      console.error('No valid printer URL found');
+      return;
+    }
 
-export {printableTemplate};
+    const html = printableTemplate(printableInvoice);
+    if (!html || typeof html !== 'string') {
+      console.error('Invalid HTML generated from printableTemplate');
+      return;
+    }
+
+    await RNPrint.print({
+      printerURL: printerUrl,
+      html,
+    });
+    console.log('Print job sent successfully');
+  } catch (error) {
+    console.error('Printing error:', error.message);
+  }
+};
+
+export {printableTemplate, printBill};

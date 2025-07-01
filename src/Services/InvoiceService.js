@@ -21,6 +21,23 @@ class InvoiceService {
       return data;
     }
   }
+
+  async getInvoice({authToken, pageNo, pageSize}) {
+    const uri = `${this.baseUrl}?size=${pageSize}&page=${pageNo}`;
+    console.log(uri)
+    try {
+      const response = await axios.get(uri, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
 }
 
 const invoiceService = new InvoiceService();
