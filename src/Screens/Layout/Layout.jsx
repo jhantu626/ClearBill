@@ -10,14 +10,14 @@ import React, {Children} from 'react';
 import {colors} from '../../utils/colors';
 
 const Layout = ({children}) => {
+  // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         backgroundColor: colors.secondary,
       }}>
-      <StatusBar barStyle={'dark-content'} />
+      {/* <StatusBar barStyle={'dark-content'} /> */}
       {children}
     </SafeAreaView>
   );

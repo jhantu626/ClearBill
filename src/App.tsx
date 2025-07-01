@@ -49,7 +49,7 @@ const App = () => {
 
   const InoviceStack = () => (
     <Stack.Navigator
-      initialRouteName="CreateInvoice"
+      initialRouteName="Invoice"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
