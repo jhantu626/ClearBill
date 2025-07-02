@@ -232,9 +232,9 @@ const printableTemplate = invoice => {
 const invoicePDFTemplate = invoice => {
   // Fix for logo image - use base64 or absolute URL
   const logoImage = invoice.business.logo
-    ? `<img src="${invoice.business.logo}" alt="logo" style="height:25mm; max-width:100%;">`
+    ? `<img src="${FILE_URL+"/business/logo/"+invoice.business.logo}" alt="logo" style="height:25mm; max-width:100%;">`
     : '<div style="height:25mm; background:#eee; display:flex; align-items:center; justify-content:center;">No Logo</div>';
-
+  console.log(logoImage);
   const itemRow = invoice.items
     .map((item, index) => {
       const totalPrice = item.price * item.quantity;
