@@ -11,8 +11,10 @@ import {colors} from '../../utils/colors';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {convertInvoiceDate, convertInvoiceDate12Hour} from '../../utils/util';
 import {printBill} from '../../utils/InvoiceTemplate';
+import {useNavigation} from '@react-navigation/native';
 
 const InvoiceCard = ({invoice}) => {
+  const navigation = useNavigation();
   const itemCount = invoice.items?.length || 0;
 
   const handlePrnt = async () => {
@@ -24,7 +26,11 @@ const InvoiceCard = ({invoice}) => {
   };
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable
+      style={styles.container}
+      onPress={() => {
+        navigation.navigate('InvoiceDetails', {invoice: invoice});
+      }}>
       <View style={styles.leftContainer}>
         <Text style={styles.nameText}>
           {invoice.customerName.length > 15

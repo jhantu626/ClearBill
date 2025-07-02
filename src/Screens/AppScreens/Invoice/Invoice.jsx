@@ -55,8 +55,9 @@ const Invoice = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchInvoices();
-    }, []),
+      // fetchInvoices();
+      console.log("authToken",authToken)
+    }),
   );
 
   useEffect(() => {

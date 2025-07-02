@@ -27,6 +27,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {fonts} from './utils/fonts';
 import AccessProvider from './Context/AccessContext';
+import InvoiceDetails from './Screens/AppScreens/Invoice/InvoiceDetails';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -56,6 +57,7 @@ const App = () => {
       }}>
       <Stack.Screen name="Invoice" component={Invoice} />
       <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
+      <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
     </Stack.Navigator>
   );
 
