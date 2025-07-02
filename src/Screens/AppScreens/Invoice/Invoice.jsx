@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -56,7 +57,7 @@ const Invoice = () => {
   useFocusEffect(
     useCallback(() => {
       // fetchInvoices();
-      console.log("authToken",authToken)
+      console.log('authToken', authToken);
     }),
   );
 
@@ -76,7 +77,7 @@ const Invoice = () => {
         contentContainerStyle={styles.container}
         data={invoices}
         keyExtractor={(item, index) => index + ' key'}
-        renderItem={({item}, index) => <InvoiceCard invoice={item}/>}
+        renderItem={({item}, index) => <InvoiceCard invoice={item} />}
         showsVerticalScrollIndicator={false}
         onEndReached={() => {
           console.log('end reached');
@@ -84,9 +85,35 @@ const Invoice = () => {
             setPageNo(prev => prev + 1);
           }
         }}
-        ListFooterComponent={() => (hasMore ? <Loader /> : <Text style={{textAlign: 'center',width: '100%',paddingVertical: 10}}>
-          No more invoices available
-        </Text>)}
+        ListFooterComponent={() =>
+          hasMore ? (
+            <Loader />
+          ) : (
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 10,
+              }}>
+              <Image
+                style={{
+                  width: 200,
+                  height: 200,
+                  alignSelf: 'center',
+                }}
+                source={require('.//../../../../assets/images/empty.webp')}
+              />
+              <Text
+                style={{
+                  textAlign: 'center',
+                  width: '100%',
+                  paddingVertical: 10,
+                }}>
+                No more invoices available
+              </Text>
+            </View>
+          )
+        }
         ListFooterComponentStyle={{
           paddingVertical: 10,
         }}
