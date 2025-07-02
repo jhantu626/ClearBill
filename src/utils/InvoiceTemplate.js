@@ -35,36 +35,34 @@ const printableTemplate = invoice => {
   <title>Invoice ${invoice.name}-${invoice.id}</title>
   <style>
     @page {
-      size: 80mm auto;
+      size: 72mm auto;
       margin: 0;
     }
     body {
-      font-family: 'Courier New', monospace;
-      width: 76mm;
+      font-family: Arial, sans-serif;
+      width: 70mm;
       margin: 0 auto;
-      padding: 1mm 2mm;
+      padding: 1mm;
       color: #000;
       font-size: 12px;
-      line-height: 1.3;
+      line-height: 1.2;
     }
     .header {
       text-align: center;
-      margin-bottom: 3mm;
+      margin-bottom: 2mm;
     }
     .business-name {
       font-weight: bold;
-      font-size: 16px;
-      margin: 2mm 0;
-      letter-spacing: 0.5px;
+      font-size: 14px;
+      margin: 1mm 0;
     }
     .business-info {
       font-size: 11px;
-      line-height: 1.4;
+      line-height: 1.2;
     }
     .divider {
-      border-top: 1px dashed #000;
-      margin: 3mm 0;
-      height: 0;
+      border-top: 1px solid #000;
+      margin: 2mm 0;
     }
     .invoice-meta {
       display: flex;
@@ -79,19 +77,18 @@ const printableTemplate = invoice => {
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 3mm 0;
+      margin: 2mm 0;
     }
     th {
       text-align: left;
       padding: 1mm 0;
-      border-bottom: 1px solid #000;
+      border-bottom: 2px solid #000;
       font-weight: bold;
       font-size: 11px;
     }
     td {
       padding: 1mm 0;
-      border-bottom: 1px dotted #ccc;
-      vertical-align: top;
+      border-bottom: 1px solid #000;
       font-size: 11px;
     }
     .col-item { width: 32%; }
@@ -100,54 +97,48 @@ const printableTemplate = invoice => {
     .col-rate { width: 20%; text-align: right; }
     .col-amt { width: 20%; text-align: right; }
     .totals {
-      margin-top: 3mm;
+      margin-top: 2mm;
     }
     .total-row {
       display: flex;
       justify-content: space-between;
       margin: 1mm 0;
-      font-size: 12px;
+      font-size: 11px;
     }
     .grand-total {
       font-weight: bold;
-      font-size: 14px;
-      border-top: 1px solid #000;
-      padding-top: 2mm;
-      margin-top: 2mm;
+      font-size: 12px;
+      border-top: 2px solid #000;
+      padding-top: 1mm;
+      margin-top: 1mm;
     }
     .footer {
       text-align: center;
-      margin-top: 5mm;
-      font-size: 11px;
+      margin-top: 3mm;
+      font-size: 10px;
     }
     .terms {
-      margin-top: 3mm;
+      margin-top: 2mm;
       font-size: 9px;
-      line-height: 1.4;
+      line-height: 1.2;
     }
     .barcode-container {
-      margin: 3mm auto;
+      margin: 2mm auto;
       text-align: center;
     }
     .barcode {
-      height: 30px;
-      image-rendering: crisp-edges;
-    }
-    .center {
-      text-align: center;
-    }
-    .highlight {
-      background-color: #f5f5f5;
-      padding: 1mm 2mm;
-      border-radius: 2px;
+      height: 25px;
+      image-rendering: pixelated;
     }
     @media print {
       body {
-        width: 76mm;
-        padding: 0 2mm;
+        width: 70mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      .no-print {
-        display: none;
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
@@ -221,13 +212,12 @@ const printableTemplate = invoice => {
   
   <div class="divider"></div>
   
-  <div class="terms highlight">
+  <!--<div class="terms">
     <strong>Terms & Conditions:</strong><br>
     1. Payment due upon receipt<br>
     2. 1% monthly interest on late payments<br>
-    3. Goods once sold cannot be returned<br>
-    4. Subject to our jurisdiction
-  </div>
+    3. Goods once sold cannot be returned
+  </div>-->
   
   <div class="footer">
     Thank you for your business!<br>
@@ -247,11 +237,10 @@ const invoicePDFTemplate = invoice => {
 
   const itemRow = invoice.items
     .map((item, index) => {
-      const gstAmount =
-        (item.price * item.quantity * (item.totalGst || 0)) / 100;
-      const amountAfterDiscount =
-        item.price * item.quantity -
-        (item.price * item.quantity * (item.discount || 0)) / 100;
+      const totalPrice = item.price * item.quantity;
+      const discountAmount = totalPrice * (item.discount / 100);
+      const gstAmount = (totalPrice - discountAmount) * (item.totalGst / 100);
+      const amountAfterDiscount = totalPrice - discountAmount;
       const totalAmount = amountAfterDiscount + gstAmount;
 
       return `<tr>
@@ -536,4 +525,4 @@ const printInvoice = async printableInvoice => {
   }
 };
 
-export {printableTemplate, printBill, invoicePDFTemplate,printInvoice};
+export {printableTemplate, printBill, invoicePDFTemplate, printInvoice};

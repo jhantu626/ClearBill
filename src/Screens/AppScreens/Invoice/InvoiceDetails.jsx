@@ -31,6 +31,10 @@ const InvoiceDetails = () => {
     await printBill(invoice);
   };
 
+  const handlePrintPdf = async () => {
+    await printInvoice(invoice);
+  };
+
   return (
     <Layout>
       <SecondaryHeader navigation="back" title="Invoice Details" />
@@ -90,15 +94,15 @@ const InvoiceDetails = () => {
           <View style={styles.summaryContainer}>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Sub Total</Text>
-              <Text style={styles.summaryText}>₹{invoice.subTotalAmount}</Text>
+              <Text style={styles.summaryText}>₹{invoice.subTotalAmount.toFixed(2)}</Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Discount</Text>
-              <Text style={styles.summaryText}>₹{invoice.totalDiscount}</Text>
+              <Text style={styles.summaryText}>₹{invoice.totalDiscount.toFixed(2)}</Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>GST</Text>
-              <Text style={styles.summaryText}>{invoice.totalGst}</Text>
+              <Text style={styles.summaryText}>{invoice.totalGst.toFixed(2)}</Text>
             </View>
             <PrimaryDivider />
             <View style={styles.subSummaryCOntainer}>
@@ -110,9 +114,7 @@ const InvoiceDetails = () => {
         <View style={styles.btnContainers}>
           <TouchableOpacity
             style={styles.btnContainer}
-            onPress={async () => {
-              await printInvoice(invoice);
-            }}>
+            onPress={handlePrintPdf}>
             <Text style={styles.btnText}>Print PDF</Text>
           </TouchableOpacity>
           <TouchableOpacity

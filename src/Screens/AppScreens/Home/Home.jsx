@@ -7,19 +7,45 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {ChartBar, SecondaryHeader} from '../../../Components';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
 import {FlatList} from 'react-native-gesture-handler';
 import InvoiceCard from '../../../Components/Cards/InvoiceCard';
+import {invoiceService} from '../../../Services/InvoiceService';
+import {useAuth} from '../../../Context/AuthContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Home = () => {
+  // CONTEXT
+  const {authToken} = useAuth();
+
   const options = ['Day', 'Week', 'Monthly'];
+  const [invoices, setInvoices] = useState([]);
 
   // Selected State
   const [selectedSales, setSelectedSales] = React.useState('Day');
+
+  const fetchInvoices = async () => {
+    try {
+      const data = await invoiceService.getInvoice({
+        authToken: authToken,
+        pageNo: 0,
+        pageSize: 10,
+      });
+      console.log('data', JSON.stringify(data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchInvoices();
+    }, []),
+  );
 
   return (
     <Layout>
@@ -87,8 +113,8 @@ const Home = () => {
           </TouchableOpacity>
         </View>
         <Text style={styles.invoiceText}>Recent Invoices</Text>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
-          <InvoiceCard key={index + 'invoice'} />
+        {invoices.map((item, index) => (
+          <InvoiceCard invoice={item} key={index + 'invoice'} />
         ))}
       </ScrollView>
     </Layout>
