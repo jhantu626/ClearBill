@@ -8,137 +8,140 @@ const printableTemplate = invoice => {
     return '₹' + parseFloat(amount).toFixed(2);
   };
 
-  // Generate item rows
+  // Generate compact item rows (max 24 chars for item name)
   const itemRow = invoice.items
     .map(
       item => `
     <tr class="item-row">
-      <td class="col-item">
-        ${item.name.length > 25 ? item.name.slice(0, 25) + '...' : item.name}
-      </td>
-      <td class="col-qty">${item.quantity}</td>
-      <td class="col-unit">${item.unitType}</td>
-      <td class="col-rate">${formatCurrency(item.price)}</td>
-      <td class="col-amt">${formatCurrency(item.price * item.quantity)}</td>
+      <td class="item-name">${item.name.length > 24 ? item.name.slice(0, 24) + '...' : item.name}</td>
+      <td class="item-qty">${item.quantity} ${item.unitType}</td>
+      <td class="item-amt right">${formatCurrency(item.price * item.quantity)}</td>
     </tr>
   `,
     )
     .join('');
 
-  // Barcode data
-  const barcodeData = `${invoice.name}-${invoice.id}`;
-
   const template = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Invoice ${invoice.name}-${invoice.id}</title>
+  <meta charset="UTF-8">
+  <title>Invoice ${invoice.id}</title>
   <style>
+    /* Universal thermal printer styles */
+    /* Based on research of common thermal printer specifications */
     @page {
-      size: 72mm auto;
-      margin: 0;
+      size: auto;   /* Auto detects printer width */
+      margin: 0;    /* Remove default margins */
     }
     body {
-      font-family: Arial, sans-serif;
-      width: 70mm;
-      margin: 0 auto;
-      padding: 1mm;
-      color: #000;
-      font-size: 12px;
-      line-height: 1.2;
+      font-family: "Courier New", monospace; /* Best supported font for thermal printers */
+      width: 100%;
+      margin: 0;
+      padding: 1mm 2mm;
+      font-size: 11pt; /* Increased from 9pt */
+      line-height: 1.2; /* Adjusted for larger font */
     }
+    /* Header styles */
     .header {
       text-align: center;
-      margin-bottom: 2mm;
+      margin-bottom: 1mm;
     }
     .business-name {
       font-weight: bold;
-      font-size: 14px;
-      margin: 1mm 0;
+      font-size: 14pt; /* Increased from 11pt */
+      margin-bottom: 0.5mm;
     }
     .business-info {
-      font-size: 11px;
+      font-size: 10pt; /* Increased from 8pt */
       line-height: 1.2;
     }
+    /* Divider line */
     .divider {
       border-top: 1px solid #000;
-      margin: 2mm 0;
+      margin: 1mm 0;
     }
+    /* Invoice metadata */
     .invoice-meta {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 2mm;
-      font-size: 11px;
+      margin-bottom: 1mm;
+      font-size: 10pt; /* Increased from 8pt */
     }
+    /* Customer info */
     .customer-info {
-      margin: 2mm 0;
-      font-size: 11px;
+      margin: 1mm 0;
+      font-size: 10pt; /* Increased from 8pt */
     }
+    /* Table styles */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 2mm 0;
+      margin: 1mm 0;
     }
     th {
       text-align: left;
-      padding: 1mm 0;
-      border-bottom: 2px solid #000;
-      font-weight: bold;
-      font-size: 11px;
+      border-bottom: 1px solid #000;
+      padding: 0.5mm 0;
+      font-size: 10pt; /* Increased from 8pt */
     }
     td {
-      padding: 1mm 0;
-      border-bottom: 1px solid #000;
-      font-size: 11px;
+      padding: 0.5mm 0;
+      font-size: 10pt; /* Increased from 8pt */
+      vertical-align: top;
     }
-    .col-item { width: 32%; }
-    .col-qty { width: 12%; text-align: center; }
-    .col-unit { width: 16%; text-align: center; }
-    .col-rate { width: 20%; text-align: right; }
-    .col-amt { width: 20%; text-align: right; }
+    .item-name {
+      width: 50%;
+    }
+    .item-qty {
+      width: 25%;
+    }
+    .item-amt {
+      width: 25%;
+    }
+    .right {
+      text-align: right;
+    }
+    /* Totals section */
     .totals {
-      margin-top: 2mm;
+      margin-top: 1mm;
     }
     .total-row {
       display: flex;
       justify-content: space-between;
-      margin: 1mm 0;
-      font-size: 11px;
+      margin: 0.5mm 0;
+      font-size: 10pt; /* Increased from 8pt */
     }
     .grand-total {
       font-weight: bold;
-      font-size: 12px;
-      border-top: 2px solid #000;
+      border-top: 1px solid #000;
       padding-top: 1mm;
       margin-top: 1mm;
+      font-size: 11pt; /* Increased from 9pt */
     }
+    /* Footer */
     .footer {
       text-align: center;
-      margin-top: 3mm;
-      font-size: 10px;
-    }
-    .terms {
       margin-top: 2mm;
-      font-size: 9px;
-      line-height: 1.2;
+      font-size: 9pt; /* Increased from 7pt */
     }
+    /* Barcode - only included if needed */
     .barcode-container {
-      margin: 2mm auto;
       text-align: center;
+      margin: 1mm 0;
     }
     .barcode {
-      height: 25px;
-      image-rendering: pixelated;
+      height: 20px;
+      image-rendering: crisp-edges;
     }
+    /* Print-specific styles */
     @media print {
       body {
-        width: 70mm !important;
-        margin: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
       }
       * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
     }
   </style>
@@ -148,7 +151,7 @@ const printableTemplate = invoice => {
     <div class="business-name">${invoice.business.name}</div>
     <div class="business-info">
       ${invoice.business.address}<br>
-      ${invoice.business.gstNo ? 'GSTIN: ' + invoice.business.gstNo : ''}
+      ${invoice.business.gstNo ? 'GST: ' + invoice.business.gstNo : ''}
     </div>
   </div>
   
@@ -156,20 +159,14 @@ const printableTemplate = invoice => {
   
   <div class="invoice-meta">
     <div>
-      <strong>Invoice No:</strong> ${invoice.name}-${invoice.id}<br>
+      <strong>Invoice:</strong> ${invoice.name}-${invoice.id}<br>
       <strong>Date:</strong> ${convertInvoiceDate(invoice.createdAt)}
     </div>
   </div>
   
   <div class="customer-info">
-    <strong>Customer:</strong> ${invoice.customerName}<br>
-    <strong>Mobile:</strong> +91 ${invoice.customerMobile}
-  </div>
-  
-  <div class="barcode-container">
-    <img class="barcode" alt="Barcode" src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
-      barcodeData,
-    )}&code=Code128&dpi=96&qunit=Mm&quiet=0" />
+    <div><strong>${invoice.customerName}</strong></div>
+    <div>${invoice.customerMobile}</div>
   </div>
   
   <div class="divider"></div>
@@ -177,11 +174,9 @@ const printableTemplate = invoice => {
   <table>
     <thead>
       <tr>
-        <th class="col-item">Item</th>
-        <th class="col-qty">Qty</th>
-        <th class="col-unit">Unit</th>
-        <th class="col-rate">Rate</th>
-        <th class="col-amt">Amount</th>
+        <th class="item-name">ITEM</th>
+        <th class="item-qty">QTY</th>
+        <th class="item-amt right">AMOUNT</th>
       </tr>
     </thead>
     <tbody>
@@ -201,7 +196,7 @@ const printableTemplate = invoice => {
       <span>-${formatCurrency(invoice.totalDiscount)}</span>
     </div>
     <div class="total-row">
-      <span>GST:</span>
+      <span>Tax:</span>
       <span>${formatCurrency(invoice.totalGst)}</span>
     </div>
     <div class="total-row grand-total">
@@ -210,18 +205,9 @@ const printableTemplate = invoice => {
     </div>
   </div>
   
-  <div class="divider"></div>
-  
-  <!--<div class="terms">
-    <strong>Terms & Conditions:</strong><br>
-    1. Payment due upon receipt<br>
-    2. 1% monthly interest on late payments<br>
-    3. Goods once sold cannot be returned
-  </div>-->
-  
   <div class="footer">
     Thank you for your business!<br>
-    <strong>${invoice.business.name}</strong>
+    ${invoice.business.name}
   </div>
 </body>
 </html>`;

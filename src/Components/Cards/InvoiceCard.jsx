@@ -13,7 +13,7 @@ import {convertInvoiceDate, convertInvoiceDate12Hour} from '../../utils/util';
 import {printBill} from '../../utils/InvoiceTemplate';
 import {useNavigation} from '@react-navigation/native';
 
-const InvoiceCard = ({invoice}) => {
+const InvoiceCard = ({invoice, navigationPage = 'InvoiceDetails',onPressFunction}) => {
   const navigation = useNavigation();
   const itemCount = invoice.items?.length || 0;
 
@@ -29,7 +29,7 @@ const InvoiceCard = ({invoice}) => {
     <Pressable
       style={styles.container}
       onPress={() => {
-        navigation.navigate('InvoiceDetails', {invoice: invoice});
+        navigation.navigate(navigationPage, {invoice: invoice});
       }}>
       <View style={styles.leftContainer}>
         <Text style={styles.nameText}>
@@ -50,7 +50,7 @@ const InvoiceCard = ({invoice}) => {
           style={[
             styles.viewBtn,
             {backgroundColor: colors.primaryBackground, paddingHorizontal: 15},
-          ]}>
+          ]} onPress={onPressFunction}>
           <FontAwesome name="share" size={18} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.viewBtn} onPress={handlePrnt}>

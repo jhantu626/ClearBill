@@ -92,10 +92,24 @@ const App = () => {
     </AccessProvider>
   );
 
+  const HomeStack = () => (
+    <AccessProvider>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
+      </Stack.Navigator>
+    </AccessProvider>
+  );
+
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Invoice"
+        initialRouteName="Home"
         backBehavior="history"
         screenOptions={{
           headerShown: false,
@@ -112,7 +126,7 @@ const App = () => {
         }}>
         <Tab.Screen
           name="Home"
-          component={Home}
+          component={HomeStack}
           options={{
             tabBarIcon: ({color}) => (
               <Octicons name="home" size={24} color={color} />

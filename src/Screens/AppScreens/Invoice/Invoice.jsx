@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {useAuth} from '../../../Context/AuthContext';
 import InvoiceCard from '../../../Components/Cards/InvoiceCard';
@@ -35,19 +35,21 @@ const Invoice = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = async ({reset=false}) => {
     try {
+      const currentPage=reset?0:pageNo;
       const data = await invoiceService.getInvoice({
         authToken: authToken,
         pageNo: pageNo,
         pageSize: 10,
       });
-      console.log('invoice data ', data);
       if (data.length === 0) {
         setHasMore(false);
       }
       setInvoices(prev => [...prev, ...data]);
-      console.log(invoices.length);
+      if(reset){
+        setPageNo(0);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -56,16 +58,18 @@ const Invoice = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // fetchInvoices();
-      console.log('authToken', authToken);
-    }),
+      setInvoices([]);
+      setPageNo(0);
+      fetchInvoices({reset: true});
+      console.log('useFocusEffect');
+    }, [authToken]),
   );
 
-  useEffect(() => {
-    if (pageNo > 0) {
-      fetchInvoices();
-    }
-  }, [pageNo]);
+  // useEffect(() => {
+  //   if (pageNo > 0) {
+  //     fetchInvoices();
+  //   }
+  // }, [pageNo]);
 
   return (
     <Layout>

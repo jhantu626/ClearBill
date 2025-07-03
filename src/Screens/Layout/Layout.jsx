@@ -17,7 +17,7 @@ const Layout = ({children}) => {
         flex: 1,
         backgroundColor: colors.secondary,
       }}>
-      <StatusBar barStyle={'dark-content'} />
+      <StatusBar barStyle={'light-content'} backgroundColor={colors.primary} />
       {children}
     </SafeAreaView>
   );

@@ -25,6 +25,10 @@ import ProductCardShimmer from './Shimmers/ProductCardShimmer';
 // Dividers
 import PrimaryDivider from './Dividers/PrimaryDivider';
 
+
+// Bottom Sheets
+import ShareBottomSheet from './BottomSheet/ShareBottomSheet';
+
 export {
   SecondaryHeader,
   DefaultInput,
@@ -39,4 +43,5 @@ export {
   SelectInput,
   ProductCardShimmer,
   PrimaryDivider,
+  ShareBottomSheet
 };

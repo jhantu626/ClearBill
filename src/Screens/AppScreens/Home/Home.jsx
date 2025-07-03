@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {ChartBar, SecondaryHeader} from '../../../Components';
+import {ChartBar, SecondaryHeader, ShareBottomSheet} from '../../../Components';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
 import {FlatList} from 'react-native-gesture-handler';
@@ -17,6 +17,7 @@ import InvoiceCard from '../../../Components/Cards/InvoiceCard';
 import {invoiceService} from '../../../Services/InvoiceService';
 import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
+import Loader from '../../../Components/Loaders/Loader';
 
 const Home = () => {
   // CONTEXT
@@ -28,16 +29,26 @@ const Home = () => {
   // Selected State
   const [selectedSales, setSelectedSales] = React.useState('Day');
 
+  // Loading State
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Ref States
+  const bottomSheetRef = useRef(null);
+
   const fetchInvoices = async () => {
     try {
+      setIsLoading(true);
       const data = await invoiceService.getInvoice({
         authToken: authToken,
         pageNo: 0,
         pageSize: 10,
       });
       console.log('data', JSON.stringify(data));
+      setInvoices(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,10 +124,27 @@ const Home = () => {
           </TouchableOpacity>
         </View>
         <Text style={styles.invoiceText}>Recent Invoices</Text>
-        {invoices.map((item, index) => (
-          <InvoiceCard invoice={item} key={index + 'invoice'} />
-        ))}
+        {isLoading ? (
+          <View style={{marginTop: 40}}>
+            <Loader />
+          </View>
+        ) : (
+          invoices.map((item, index) => (
+            <InvoiceCard
+              invoice={item}
+              key={index + 'invoice'}
+              onPressFunction={() => {
+                bottomSheetRef.current?.expand();
+              }}
+            />
+          ))
+        )}
       </ScrollView>
+      <ShareBottomSheet
+        ref={bottomSheetRef}
+        snapPoints={useMemo(() => ['15%'], [])}
+        key={"bottomSheet-share"}
+      />
     </Layout>
   );
 };
