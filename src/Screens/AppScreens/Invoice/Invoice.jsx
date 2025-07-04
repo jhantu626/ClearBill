@@ -55,6 +55,8 @@ const Invoice = () => {
       });
       if (data.length === 0) {
         setHasMore(false);
+      } else {
+        setHasMore(true);
       }
       setInvoices(prev => (pageNo === 0 ? data : [...prev, ...data]));
       if (reset) {
@@ -115,7 +117,7 @@ const Invoice = () => {
             key={index + 'invoice-card'}
             invoice={item}
             onPressFunction={() => {
-              setSharableInvoices(index);
+              setSharableInvoices(prev => index);
               bottomSheetRef.current?.expand();
             }}
           />
