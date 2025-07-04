@@ -6,9 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {PrimaryDivider, SecondaryHeader} from '../../../Components';
+import {
+  PrimaryDivider,
+  SecondaryHeader,
+  ShareBottomSheet,
+} from '../../../Components';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
@@ -26,6 +30,12 @@ const InvoiceDetails = () => {
   const route = useRoute();
 
   const {invoice} = route.params;
+
+  // State variables
+  const [sharableInvoices, setSharableInvoices] = useState(null);
+
+  // Ref States
+  const bottomSheetRef = useRef(null);
 
   const handleGeneratePrint = async () => {
     await printBill(invoice);
@@ -94,15 +104,21 @@ const InvoiceDetails = () => {
           <View style={styles.summaryContainer}>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Sub Total</Text>
-              <Text style={styles.summaryText}>₹{invoice.subTotalAmount.toFixed(2)}</Text>
+              <Text style={styles.summaryText}>
+                ₹{invoice.subTotalAmount.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>Discount</Text>
-              <Text style={styles.summaryText}>₹{invoice.totalDiscount.toFixed(2)}</Text>
+              <Text style={styles.summaryText}>
+                ₹{invoice.totalDiscount.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.subSummaryCOntainer}>
               <Text style={styles.summaryText}>GST</Text>
-              <Text style={styles.summaryText}>{invoice.totalGst.toFixed(2)}</Text>
+              <Text style={styles.summaryText}>
+                {invoice.totalGst.toFixed(2)}
+              </Text>
             </View>
             <PrimaryDivider />
             <View style={styles.subSummaryCOntainer}>
@@ -122,11 +138,21 @@ const InvoiceDetails = () => {
             onPress={handleGeneratePrint}>
             <AntDesign name="printer" size={24} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnContainer}>
+          <TouchableOpacity
+            style={styles.btnContainer}
+            onPress={() => {
+              bottomSheetRef.current?.expand();
+            }}>
             <Feather name="share-2" size={24} />
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <ShareBottomSheet
+        ref={bottomSheetRef}
+        snapPoints={useMemo(() => ['15%'], [])}
+        key={'bottomSheet-share'}
+        invoice={invoice}
+      />
     </Layout>
   );
 };
