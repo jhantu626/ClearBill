@@ -106,8 +106,8 @@ const ShareBottomSheet = ({
         ToastAndroid.show('Permission denied', ToastAndroid.SHORT);
         return;
       }
-
-      const html = await invoicePDFTemplate(invoice);
+      console.log('invoice', invoice);
+      const html = invoicePDFTemplate(invoice);
 
       const options = {
         html: html,

@@ -16,6 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 const InvoiceCard = ({invoice, navigationPage = 'InvoiceDetails',onPressFunction}) => {
   const navigation = useNavigation();
   const itemCount = invoice.items?.length || 0;
+  console.log('invoice', invoice);
 
   const handlePrnt = async () => {
     try {
