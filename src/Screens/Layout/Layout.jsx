@@ -1,18 +1,13 @@
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Platform, StatusBar, StyleSheet, Text, View} from 'react-native';
 import React, {Children} from 'react';
 import {colors} from '../../utils/colors';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Layout = ({children}) => {
   // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   return (
     <SafeAreaView
+      edges={['top', 'left', 'right']}
       style={{
         flex: 1,
         backgroundColor: colors.secondary,

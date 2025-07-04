@@ -102,6 +102,7 @@ const App = () => {
         }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
+        <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
       </Stack.Navigator>
     </AccessProvider>
   );
