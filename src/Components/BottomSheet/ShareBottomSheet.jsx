@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Linking,
@@ -10,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -18,12 +19,15 @@ import BottomSheet, {
 import {invoicePDFTemplate} from '../../utils/InvoiceTemplate';
 import RNHtmltoPdf from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
+import Loader from '../Loaders/Loader';
+import { colors } from '../../utils/colors';
 
 const ShareBottomSheet = ({
   ref,
   snapPoints = useMemo(() => ['15%'], []),
   invoice,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   console.log('share invoice', invoice);
   const renderBackdrop = useMemo(
     () => props =>
@@ -106,7 +110,6 @@ const ShareBottomSheet = ({
         ToastAndroid.show('Permission denied', ToastAndroid.SHORT);
         return;
       }
-      console.log('invoice', invoice);
       const html = invoicePDFTemplate(invoice);
 
       const options = {
@@ -114,6 +117,8 @@ const ShareBottomSheet = ({
         fileName: `invoice_${invoice.id}`,
         directory: 'Documents',
       };
+
+      setIsLoading(true);
 
       const file = await RNHtmltoPdf.convert(options);
       const filePath = `file://${file.filePath}`; // Prefix with file://
@@ -129,6 +134,8 @@ const ShareBottomSheet = ({
     } catch (error) {
       console.error('Error sharing invoice via WhatsApp:', error);
       ToastAndroid.show('Failed to share invoice', ToastAndroid.SHORT);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,15 +150,29 @@ const ShareBottomSheet = ({
         duration: 300,
       }}>
       <BottomSheetView style={{flex: 1, padding: 20}}>
-        <TouchableOpacity onPress={handleShare}>
-          <Image
-            source={require('./../../../assets/images/whatsapp.png')}
-            style={{
-              width: 50,
-              height: 50,
-            }}
-          />
-        </TouchableOpacity>
+        <View
+          style={{
+            width: 60,
+            height: 60,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 10,
+            backgroundColor: colors.inputBackground + '40',
+          }}>
+          <TouchableOpacity onPress={handleShare}>
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <Image
+                source={require('./../../../assets/images/whatsapp.png')}
+                style={{
+                  width: 50,
+                  height: 50,
+                }}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
       </BottomSheetView>
     </BottomSheet>
   );
