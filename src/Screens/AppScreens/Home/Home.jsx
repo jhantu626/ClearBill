@@ -16,10 +16,12 @@ import {FlatList} from 'react-native-gesture-handler';
 import InvoiceCard from '../../../Components/Cards/InvoiceCard';
 import {invoiceService} from '../../../Services/InvoiceService';
 import {useAuth} from '../../../Context/AuthContext';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Components/Loaders/Loader';
 
 const Home = () => {
+  const navigation = useNavigation();
+
   // CONTEXT
   const {authToken} = useAuth();
 
@@ -28,6 +30,7 @@ const Home = () => {
 
   // Selected State
   const [selectedSales, setSelectedSales] = React.useState('Day');
+  const [sharableInvoices, setSharableInvoices] = useState(null);
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +46,6 @@ const Home = () => {
         pageNo: 0,
         pageSize: 10,
       });
-      console.log('data', JSON.stringify(data));
       setInvoices(data);
     } catch (error) {
       console.error(error);
@@ -110,6 +112,7 @@ const Home = () => {
         </View>
         <View style={styles.middleBtnContainer}>
           <TouchableOpacity
+            onPress={() => navigation.navigate('CreateInvoice')}
             style={[styles.middleBtn, {backgroundColor: colors.primary}]}>
             <Text style={styles.middleBtnText}>Create Invoice</Text>
           </TouchableOpacity>
@@ -134,6 +137,7 @@ const Home = () => {
               invoice={item}
               key={index + 'invoice'}
               onPressFunction={() => {
+                setSharableInvoices(index);
                 bottomSheetRef.current?.expand();
               }}
             />
@@ -143,7 +147,8 @@ const Home = () => {
       <ShareBottomSheet
         ref={bottomSheetRef}
         snapPoints={useMemo(() => ['15%'], [])}
-        key={"bottomSheet-share"}
+        key={'bottomSheet-share'}
+        invoice={invoices[sharableInvoices]}
       />
     </Layout>
   );
