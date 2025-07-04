@@ -93,7 +93,6 @@ const Invoice = () => {
 
   const filteredInvoices = useMemo(() => {
     if (!query) return invoices;
-
     const lowerCaseQuery = query.toLowerCase();
     return invoices.filter(
       item =>
@@ -117,7 +116,8 @@ const Invoice = () => {
             key={index + 'invoice-card'}
             invoice={item}
             onPressFunction={() => {
-              setSharableInvoices(prev => index);
+              console.log(item);
+              setSharableInvoices(item);
               bottomSheetRef.current?.expand();
             }}
           />
@@ -178,7 +178,7 @@ const Invoice = () => {
         ref={bottomSheetRef}
         snapPoints={useMemo(() => ['15%'], [])}
         key={'bottomSheet-share'}
-        invoice={filteredInvoices[sharableInvoices]}
+        invoice={sharableInvoices}
       />
     </Layout>
   );
