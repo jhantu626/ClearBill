@@ -6,10 +6,27 @@ import {colors} from '../../utils/colors';
 const ChartBar = () => {
   // Sample data - replace with your actual data
   const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','July','Aug'],
+    labels: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'July',
+      'Aug',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'July',
+      'Aug',
+    ],
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43, 50, 60],
+        data: [20, 45, 28, 80, 99, 43, 50, 60, 20, 45, 28, 80, 99, 43, 50, 60],
       },
     ],
   };
@@ -17,7 +34,7 @@ const ChartBar = () => {
   return (
     <BarChart
       data={data}
-      width={Dimensions.get('window').width - 40} // subtract left and right margins
+      width={Dimensions.get('window').width - 32} // subtract left and right margins
       height={220}
       yAxisLabel="₹"
       chartConfig={{
@@ -27,7 +44,7 @@ const ChartBar = () => {
         decimalPlaces: 0,
         color: (opacity = 1) => colors.inputBackground,
         labelColor: (opacity = 1) => colors.inputBackground,
-        barPercentage: 0.7,
+        barPercentage: data.labels.length / 2 / data.labels.length,
         barRadius: 2,
         propsForBackgroundLines: {
           strokeWidth: 0,
@@ -42,7 +59,7 @@ const ChartBar = () => {
         style: {
           borderRadius: 16,
         },
-        barColors: [colors.primary], // Using your primary color for bars
+        barColors: [colors.primary],
       }}
       style={{
         marginVertical: 8,
