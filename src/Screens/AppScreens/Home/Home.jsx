@@ -1,23 +1,27 @@
 import {
-  Dimensions,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Layout from '../../Layout/Layout';
-import {ChartBar, SecondaryHeader, ShareBottomSheet} from '../../../Components';
+import {
+  ChartBar,
+  ChartBarShimmer,
+  CommonShimmerLine,
+  SecondaryHeader,
+  ShareBottomSheet,
+} from '../../../Components';
 import {fonts} from '../../../utils/fonts';
 import {colors} from '../../../utils/colors';
-import {FlatList} from 'react-native-gesture-handler';
 import InvoiceCard from '../../../Components/Cards/InvoiceCard';
 import {invoiceService} from '../../../Services/InvoiceService';
 import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Components/Loaders/Loader';
+import {hoursAmPm} from '../../../utils/data';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -31,9 +35,13 @@ const Home = () => {
   // Selected State
   const [selectedSales, setSelectedSales] = React.useState('DAY');
   const [sharableInvoices, setSharableInvoices] = useState(null);
+  const [salesOverview, setSalesOverview] = useState({});
+  const [total, setTotal] = useState(0);
+  const [totalPercentage, setTotalPercentage] = useState(0);
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
+  const [isChartLoading, setIsChartLoading] = useState(true);
 
   // Ref States
   const bottomSheetRef = useRef(null);
@@ -56,13 +64,58 @@ const Home = () => {
 
   const fetchSalesOverview = async () => {
     try {
+      setIsChartLoading(true);
       const data = await invoiceService.getSalesOverview({
         authtToken: authToken,
         type: selectedSales,
       });
+      if (selectedSales === 'WEEK') {
+        const dayOrder = [
+          'SUNDAY',
+          'MONDAY',
+          'TUESDAY',
+          'WEDNESDAY',
+          'THURSDAY',
+          'FRIDAY',
+          'SATURDAY',
+        ];
+
+        // Sort the dataset by day order
+        data.dataSet.sort((a, b) => {
+          return dayOrder.indexOf(a.label) - dayOrder.indexOf(b.label);
+        });
+      } else {
+        data.dataSet.sort((a, b) => Number(a.label) - Number(b.label));
+      }
       console.log(data);
+      const lables = new Array();
+      const dataSetData = new Array();
+      console.log(data);
+      for (let i = 0; i < data?.dataSet.length; i++) {
+        lables[i] =
+          selectedSales === 'DAY'
+            ? hoursAmPm[data?.dataSet[i]?.label]
+            : selectedSales === 'WEEK'
+            ? data?.dataSet[i]?.label.slice(0, 3)
+            : data?.dataSet[i]?.label;
+        dataSetData[i] = data?.dataSet[i]?.value;
+      }
+      const payload = {
+        labels: lables,
+        datasets: [
+          {
+            data: dataSetData,
+          },
+        ],
+      };
+      setSalesOverview(payload);
+      console.log(payload);
+      setTotal(data?.totalSum || 0);
+      setTotalPercentage(data?.percentage || 0);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsChartLoading(false);
     }
   };
 
@@ -79,6 +132,13 @@ const Home = () => {
       fetchData();
     }, []),
   );
+
+  useEffect(() => {
+    console.log(selectedSales);
+    if (!isChartLoading) {
+      fetchSalesOverview();
+    }
+  }, [selectedSales]);
 
   return (
     <Layout>
@@ -113,21 +173,45 @@ const Home = () => {
           </View>
           <View>
             <Text style={{fontSize: 16, fontFamily: fonts.medium}}>Sales</Text>
-            <Text style={{fontSize: 28, fontFamily: fonts.bold}}>₹12,500</Text>
+            {isChartLoading ? (
+              <CommonShimmerLine height={30} width="30%" />
+            ) : (
+              <Text style={{fontSize: 28, fontFamily: fonts.bold}}>
+                ₹{total.toFixed(2)}
+              </Text>
+            )}
+
             <View style={{flexDirection: 'row', gap: 5}}>
-              <Text style={{fontSize: 16, fontFamily: fonts.regular}}>
-                This Week
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: fonts.regular,
-                  color: '#088738',
-                }}>
-                +15%
-              </Text>
+              {isChartLoading ? (
+                <CommonShimmerLine height={14} width="30%" />
+              ) : (
+                <Text style={{fontSize: 16, fontFamily: fonts.regular}}>
+                  {selectedSales === 'DAY' ? 'Today' : 'This'}{' '}
+                  {selectedSales === 'DAY'
+                    ? ''
+                    : selectedSales.charAt(0).toUpperCase() +
+                      selectedSales.slice(1).toLowerCase()}
+                </Text>
+              )}
+              {isChartLoading ? (
+                <CommonShimmerLine height={14} width="10%" />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: fonts.regular,
+                    color: '#088738',
+                  }}>
+                  {totalPercentage > 0 ? '+' : ''}
+                  {totalPercentage.toFixed(2)}%
+                </Text>
+              )}
             </View>
-            <ChartBar />
+            {isChartLoading ? (
+              <ChartBarShimmer />
+            ) : (
+              <ChartBar data={salesOverview} />
+            )}
           </View>
         </View>
         <View style={styles.middleBtnContainer}>

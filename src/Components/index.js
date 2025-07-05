@@ -21,10 +21,11 @@ import SelectInput from './Input/SelectInput';
 import BusinessCardShimmer from './Shimmers/BusinessCardShimmer';
 import UserCardShimmer from './Shimmers/UserCardShimmer';
 import ProductCardShimmer from './Shimmers/ProductCardShimmer';
+import ChartBarShimmer from './Shimmers/ChartBarShimmer';
+import CommonShimmerLine from './Shimmers/CommonShimmerLine';
 
 // Dividers
 import PrimaryDivider from './Dividers/PrimaryDivider';
-
 
 // Bottom Sheets
 import ShareBottomSheet from './BottomSheet/ShareBottomSheet';
@@ -43,5 +44,7 @@ export {
   SelectInput,
   ProductCardShimmer,
   PrimaryDivider,
-  ShareBottomSheet
+  ShareBottomSheet,
+  ChartBarShimmer,
+  CommonShimmerLine
 };

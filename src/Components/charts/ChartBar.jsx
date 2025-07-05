@@ -3,33 +3,9 @@ import React from 'react';
 import {BarChart} from 'react-native-chart-kit';
 import {colors} from '../../utils/colors';
 
-const ChartBar = () => {
+const ChartBar = ({data}) => {
   // Sample data - replace with your actual data
-  const data = {
-    labels: [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'July',
-      'Aug',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'July',
-      'Aug',
-    ],
-    datasets: [
-      {
-        data: [20, 45, 28, 80, 99, 43, 50, 60, 20, 45, 28, 80, 99, 43, 50, 60],
-      },
-    ],
-  };
+  
 
   return (
     <BarChart
@@ -44,7 +20,8 @@ const ChartBar = () => {
         decimalPlaces: 0,
         color: (opacity = 1) => colors.inputBackground,
         labelColor: (opacity = 1) => colors.inputBackground,
-        barPercentage: data.labels.length / 2 / data.labels.length,
+        barPercentage: data.labels.length > 0 ? Math.min(1, 7 / data.labels.length) : 1,
+        // barPercentage: 1,
         barRadius: 2,
         propsForBackgroundLines: {
           strokeWidth: 0,
