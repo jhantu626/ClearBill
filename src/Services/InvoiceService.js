@@ -24,7 +24,6 @@ class InvoiceService {
 
   async getInvoice({authToken, pageNo, pageSize}) {
     const uri = `${this.baseUrl}?size=${pageSize}&page=${pageNo}`;
-    console.log(uri)
     try {
       const response = await axios.get(uri, {
         headers: {
@@ -34,6 +33,23 @@ class InvoiceService {
       const data = await response.data;
       return data;
     } catch (error) {
+      const data = await error.response.data;
+      return data;
+    }
+  }
+
+  async getSalesOverview({authtToken, type}) {
+    const uri = `${API_URL}/sales-overview?type=${type}`;
+    try {
+      const response = await axios.get(uri, {
+        headers: {
+          Authorization: `Bearer ${authtToken}`,
+        },
+      });
+      const data=await response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
       const data = await error.response.data;
       return data;
     }

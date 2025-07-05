@@ -9,14 +9,13 @@ import React from 'react';
 import {fonts} from '../../utils/fonts';
 import {colors} from '../../utils/colors';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {convertInvoiceDate, convertInvoiceDate12Hour} from '../../utils/util';
+import { convertInvoiceDate12Hour} from '../../utils/util';
 import {printBill} from '../../utils/InvoiceTemplate';
 import {useNavigation} from '@react-navigation/native';
 
 const InvoiceCard = ({invoice, navigationPage = 'InvoiceDetails',onPressFunction}) => {
   const navigation = useNavigation();
   const itemCount = invoice.items?.length || 0;
-  console.log('invoice', invoice);
 
   const handlePrnt = async () => {
     try {

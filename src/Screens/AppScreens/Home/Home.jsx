@@ -25,11 +25,11 @@ const Home = () => {
   // CONTEXT
   const {authToken} = useAuth();
 
-  const options = ['Day', 'Week', 'Monthly'];
+  const options = ['DAY', 'WEEK', 'MONTH'];
   const [invoices, setInvoices] = useState([]);
 
   // Selected State
-  const [selectedSales, setSelectedSales] = React.useState('Day');
+  const [selectedSales, setSelectedSales] = React.useState('DAY');
   const [sharableInvoices, setSharableInvoices] = useState(null);
 
   // Loading State
@@ -54,9 +54,29 @@ const Home = () => {
     }
   };
 
+  const fetchSalesOverview = async () => {
+    try {
+      const data = await invoiceService.getSalesOverview({
+        authtToken: authToken,
+        type: selectedSales,
+      });
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      fetchInvoices();
+      const fetchData = async () => {
+        try {
+          await Promise.all([fetchInvoices(), fetchSalesOverview()]);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchData();
     }, []),
   );
 

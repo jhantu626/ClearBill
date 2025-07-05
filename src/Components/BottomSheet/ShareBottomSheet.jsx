@@ -28,7 +28,6 @@ const ShareBottomSheet = ({
   invoice,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  console.log('share invoice', invoice);
   const renderBackdrop = useMemo(
     () => props =>
       (
@@ -92,7 +91,6 @@ const ShareBottomSheet = ({
             'Storage permission is required to share the invoice.',
           );
         }
-
         return false;
       } catch (err) {
         console.warn('Permission error:', err);
