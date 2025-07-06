@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {
   AddBusiness,
   AddProducts,
+  BusinessReportDashboard,
   CreateInvoice,
   CreateUser,
   Home,
@@ -103,6 +104,7 @@ const App = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
         <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
+        <Stack.Screen name="BusinessReport" component={BusinessReportDashboard} />
       </Stack.Navigator>
     </AccessProvider>
   );

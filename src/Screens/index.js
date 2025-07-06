@@ -5,6 +5,7 @@ import Otp from './AuthScreens/Otp';
 
 // HOme Screens
 import Home from './AppScreens/Home/Home';
+import BusinessReportDashboard from './AppScreens/Home/BusinessReportDashboard';
 
 // Invoice
 import Invoice from './AppScreens/Invoice/Invoice';
@@ -39,5 +40,6 @@ export {
   ValidateOtp,
   UserAccount,
   ProductDetails,
-  CreateInvoice
+  CreateInvoice,
+  BusinessReportDashboard
 };

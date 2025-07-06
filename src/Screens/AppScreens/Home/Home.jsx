@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Components/Loaders/Loader';
 import {hoursAmPm} from '../../../utils/data';
+import {reportTemplate} from '../../../utils/ReportTemplate';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -42,6 +44,7 @@ const Home = () => {
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
+  const [isReportLoading, setIsLoadingReport] = useState(false);
 
   // Ref States
   const bottomSheetRef = useRef(null);
@@ -140,6 +143,21 @@ const Home = () => {
     }
   }, [selectedSales]);
 
+  const generateReport = async () => {
+    try {
+      setIsLoadingReport(true);
+      const data = await invoiceService.getReportData({
+        authToken: authToken,
+      });
+      const htmlTemplate = reportTemplate(data);
+      console.log(htmlTemplate);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
+
   return (
     <Layout>
       <SecondaryHeader
@@ -200,7 +218,7 @@ const Home = () => {
                   style={{
                     fontSize: 16,
                     fontFamily: fonts.regular,
-                    color: '#088738',
+                    color: totalPercentage>0?'#088738':colors.error,
                   }}>
                   {totalPercentage > 0 ? '+' : ''}
                   {totalPercentage.toFixed(2)}%
@@ -224,10 +242,17 @@ const Home = () => {
             style={[
               styles.middleBtn,
               {backgroundColor: colors.inputBackground + '40'},
-            ]}>
-            <Text style={[styles.middleBtnText, {color: '#000'}]}>
-              View Reports
-            </Text>
+            ]}
+            onPress={()=>{
+              navigation.navigate('BusinessReport');
+            }}>
+            {isReportLoading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <Text style={[styles.middleBtnText, {color: '#000'}]}>
+                View Reports
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
         <Text style={styles.invoiceText}>Recent Invoices</Text>
