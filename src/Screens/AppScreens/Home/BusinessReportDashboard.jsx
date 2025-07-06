@@ -17,6 +17,7 @@ import {invoiceService} from '../../../Services/InvoiceService';
 import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
+import {FILE_URL} from '../../../utils/config';
 
 const {width} = Dimensions.get('window');
 
@@ -157,7 +158,9 @@ const BusinessReportDashboard = () => {
               <Text style={styles.gstNumber}>GST: {data?.gstNumber}</Text>
             </View>
             <Image
-              source={require('./../../../../assets/images/logo.png')}
+              source={{
+                uri: `${FILE_URL}/business/logo/${data?.logo}`,
+              }}
               style={{width: 70, height: 70}}
             />
           </View>
