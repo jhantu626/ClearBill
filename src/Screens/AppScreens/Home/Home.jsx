@@ -218,7 +218,7 @@ const Home = () => {
                   style={{
                     fontSize: 16,
                     fontFamily: fonts.regular,
-                    color: totalPercentage>0?'#088738':colors.error,
+                    color: totalPercentage > 0 ? '#088738' : colors.error,
                   }}>
                   {totalPercentage > 0 ? '+' : ''}
                   {totalPercentage.toFixed(2)}%
@@ -243,7 +243,7 @@ const Home = () => {
               styles.middleBtn,
               {backgroundColor: colors.inputBackground + '40'},
             ]}
-            onPress={()=>{
+            onPress={() => {
               navigation.navigate('BusinessReport');
             }}>
             {isReportLoading ? (
@@ -271,6 +271,24 @@ const Home = () => {
               }}
             />
           ))
+        )}
+        {!isLoading && (
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+              marginTop: 10,
+              justifyContent: 'center',
+              backgroundColor: colors.primary,
+              height: 45,
+              width: 150,
+              alignSelf: 'center',
+              marginVertical: 30,
+              borderRadius: 10
+            }} onPress={()=>{
+              navigation.navigate('Invoice')
+            }}>
+            <Text style={{color: '#fff',fontFamily: fonts.semibold}}>View More</Text>
+          </TouchableOpacity>
         )}
       </ScrollView>
       <ShareBottomSheet
