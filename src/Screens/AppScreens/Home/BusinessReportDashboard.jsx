@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import {BarChart, PieChart} from 'react-native-chart-kit';
 import Layout from '../../Layout/Layout';
@@ -15,6 +16,7 @@ import Loader from '../../../Components/Loaders/Loader';
 import {invoiceService} from '../../../Services/InvoiceService';
 import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
+import Feather from 'react-native-vector-icons/Feather';
 
 const {width} = Dimensions.get('window');
 
@@ -69,44 +71,54 @@ const BusinessReportDashboard = () => {
   );
 
   // Prepare chart data with null checks
-  const revenueChartData = data ? {
-    labels: data.topItems.map(item =>
-      item.itemName.length > 8
-        ? item.itemName.substring(0, 8) + '..'
-        : item.itemName,
-    ),
-    datasets: [
-      {
-        data: data.topItems.map(item => Math.round(item.totalRevenue / 1000)),
-        color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-      },
-    ],
-  } : { labels: [], datasets: [] };
+  const revenueChartData = data
+    ? {
+        labels: data.topItems.map(item =>
+          item.itemName.length > 8
+            ? item.itemName.substring(0, 8) + '..'
+            : item.itemName,
+        ),
+        datasets: [
+          {
+            data: data.topItems.map(item =>
+              Math.round(item.totalRevenue / 1000),
+            ),
+            color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
+          },
+        ],
+      }
+    : {labels: [], datasets: []};
 
-  const quantityChartData = data ? {
-    labels: data.topItems.map(item =>
-      item.itemName.length > 8
-        ? item.itemName.substring(0, 8) + '..'
-        : item.itemName,
-    ),
-    datasets: [
-      {
-        data: data.topItems.map(item => item.quantitySold),
-        color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
-      },
-    ],
-  } : { labels: [], datasets: [] };
+  const quantityChartData = data
+    ? {
+        labels: data.topItems.map(item =>
+          item.itemName.length > 8
+            ? item.itemName.substring(0, 8) + '..'
+            : item.itemName,
+        ),
+        datasets: [
+          {
+            data: data.topItems.map(item => item.quantitySold),
+            color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
+          },
+        ],
+      }
+    : {labels: [], datasets: []};
 
-  const pieChartData = data ? data.topItems.map((item, index) => ({
-    name:
-      item.itemName.length > 12
-        ? item.itemName.substring(0, 12) + '..'
-        : item.itemName,
-    population: item.totalRevenue,
-    color: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5],
-    legendFontColor: '#374151',
-    legendFontSize: 12,
-  })) : [];
+  const pieChartData = data
+    ? data.topItems.map((item, index) => ({
+        name:
+          item.itemName.length > 12
+            ? item.itemName.substring(0, 12) + '..'
+            : item.itemName,
+        population: item.totalRevenue,
+        color: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'][
+          index % 5
+        ],
+        legendFontColor: '#374151',
+        legendFontSize: 12,
+      }))
+    : [];
 
   const formatCurrency = amount => {
     return new Intl.NumberFormat('en-IN', {
@@ -149,6 +161,27 @@ const BusinessReportDashboard = () => {
               style={{width: 70, height: 70}}
             />
           </View>
+          <TouchableOpacity
+            style={{
+              marginHorizontal: 20,
+              backgroundColor: '#3B82F6',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 10,
+              borderRadius: 8,
+              flexDirection: 'row',
+              gap: 10,
+            }}>
+            <Feather name="download" size={24} color="#fff" />
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 16,
+                fontFamily: fonts.medium,
+              }}>
+              Download Report
+            </Text>
+          </TouchableOpacity>
 
           {/* Key Metrics */}
           {data && (
@@ -252,7 +285,9 @@ const BusinessReportDashboard = () => {
             <View style={styles.tableContainer}>
               <Text style={styles.tableTitle}>Top Selling Items</Text>
               <View style={styles.tableHeader}>
-                <Text style={[styles.tableHeaderText, {flex: 3}]}>Item Name</Text>
+                <Text style={[styles.tableHeaderText, {flex: 3}]}>
+                  Item Name
+                </Text>
                 <Text style={[styles.tableHeaderText, {flex: 1}]}>Qty</Text>
                 <Text style={[styles.tableHeaderText, {flex: 2}]}>Revenue</Text>
               </View>
@@ -267,7 +302,8 @@ const BusinessReportDashboard = () => {
                     style={[styles.tableCell, {flex: 1, textAlign: 'center'}]}>
                     {item.quantitySold}
                   </Text>
-                  <Text style={[styles.tableCell, {flex: 2, textAlign: 'right'}]}>
+                  <Text
+                    style={[styles.tableCell, {flex: 2, textAlign: 'right'}]}>
                     {formatCurrency(item.totalRevenue)}
                   </Text>
                 </View>
