@@ -7,6 +7,7 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {BarChart, PieChart} from 'react-native-chart-kit';
 import Layout from '../../Layout/Layout';
@@ -18,6 +19,7 @@ import {useAuth} from '../../../Context/AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import {FILE_URL} from '../../../utils/config';
+import {reportTemplate} from '../../../utils/ReportTemplate';
 
 const {width} = Dimensions.get('window');
 
@@ -31,6 +33,7 @@ const BusinessReportDashboard = () => {
 
   // LOADING VALUES
   const [isLoading, setIsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const chartConfig = {
     backgroundGradientFrom: '#ffffff',
@@ -137,6 +140,12 @@ const BusinessReportDashboard = () => {
     </View>
   );
 
+  // HANDLE DOWNLOAD BTN
+  const handleReportGeration = async () => {
+    const html = reportTemplate(data);
+    console.log(html);
+  };
+
   return (
     <Layout>
       <SecondaryHeader title="Report" navigation="back" />
@@ -174,16 +183,24 @@ const BusinessReportDashboard = () => {
               borderRadius: 8,
               flexDirection: 'row',
               gap: 10,
-            }}>
-            <Feather name="download" size={24} color="#fff" />
-            <Text
-              style={{
-                color: '#fff',
-                fontSize: 16,
-                fontFamily: fonts.medium,
-              }}>
-              Download Report
-            </Text>
+            }}
+            onPress={handleReportGeration}>
+            {isDownloading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <View
+                style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                <Feather name="download" size={24} color="#fff" />
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 16,
+                    fontFamily: fonts.medium,
+                  }}>
+                  Download Report
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           {/* Key Metrics */}
