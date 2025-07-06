@@ -46,10 +46,27 @@ class InvoiceService {
           Authorization: `Bearer ${authtToken}`,
         },
       });
-      const data=await response.data;
+      const data = await response.data;
       return data;
     } catch (error) {
       console.log(error);
+      const data = await error.response.data;
+      return data;
+    }
+  }
+
+  async getReportData({authToken}) {
+    try {
+      const uri = `${API_URL}/sales-overview/report`;
+      const response = await axios.get(uri, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      console.error(error);
       const data = await error.response.data;
       return data;
     }
