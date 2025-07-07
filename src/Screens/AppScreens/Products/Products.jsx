@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {
   FloatingAddButton,
@@ -61,6 +61,17 @@ const Products = () => {
     product.name.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const SearchInputHeader = useMemo(
+    () => (
+          <View style={{flexDirection: 'column', gap: 10}}>
+                  <SearchInput value={search} setValue={setSearch} disable={isLoading} />
+
+            <Text style={styles.headerText}>All Products</Text>
+          </View>
+        ),
+    [search, setSearch,isLoading],
+  );
+
   return (
     <Layout>
       <SecondaryHeader
@@ -74,16 +85,7 @@ const Products = () => {
         data={isLoading ? [0, 1, 2, 3, 4, 5] : filteredProducts}
         keyExtractor={(item, index) => 'Product-' + index.toString()}
         contentContainerStyle={styles.contentContainerStyle}
-        ListHeaderComponent={() => (
-          <View style={{flexDirection: 'column', gap: 10}}>
-            <SearchInput
-              value={search}
-              setValue={setSearch}
-              disable={isLoading}
-            />
-            <Text style={styles.headerText}>All Products</Text>
-          </View>
-        )}
+        ListHeaderComponent={SearchInputHeader}
         showsVerticalScrollIndicator={false}
         renderItem={(item, index) =>
           isLoading ? (
