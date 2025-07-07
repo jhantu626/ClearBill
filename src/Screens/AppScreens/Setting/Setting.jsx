@@ -18,6 +18,7 @@ import {colors} from '../../../utils/colors';
 import Octicons from 'react-native-vector-icons/Octicons';
 import {fonts} from '../../../utils/fonts';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {userService} from '../../../Services/UserService';
 import {useAuth} from '../../../Context/AuthContext';
@@ -30,7 +31,7 @@ const Setting = () => {
 
   // NAVIGATION
 
-  const {authToken} = useAuth();
+  const {authToken, logout} = useAuth();
   const navigation = useNavigation();
   const [hasBusiness, setHasBusiness] = useState(false);
 
@@ -158,6 +159,10 @@ const Setting = () => {
           </View>
           <Entypo name="chevron-right" size={24} />
         </TouchableOpacity>
+        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+          <MaterialIcons name="logout" size={24} color="#000" />
+          <Text style={styles.logoutText}>Signout</Text>
+        </TouchableOpacity>
       </ScrollView>
     </Layout>
   );
@@ -237,6 +242,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     color: colors.inputBackground,
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 30,
+    padding: 12,
+    backgroundColor: colors.inputBackground + 50,
+    borderRadius: 10,
+  },
+  logoutText: {
+    fontFamily: fonts.semibold,
   },
 });
 
