@@ -8,6 +8,8 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  ToastAndroid,
+  Platform,
 } from 'react-native';
 import {BarChart, PieChart} from 'react-native-chart-kit';
 import Layout from '../../Layout/Layout';
@@ -20,6 +22,8 @@ import {useFocusEffect} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import {FILE_URL} from '../../../utils/config';
 import {reportTemplate} from '../../../utils/ReportTemplate';
+import RNFS from 'react-native-fs';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 const {width} = Dimensions.get('window');
 
@@ -141,9 +145,31 @@ const BusinessReportDashboard = () => {
   );
 
   // HANDLE DOWNLOAD BTN
-  const handleReportGeration = async () => {
-    const html = reportTemplate(data);
-    console.log(html);
+  const handleReportGeneration = async () => {
+    try {
+      const html = reportTemplate(data);
+      console.log(html);
+
+      const file = await RNHTMLtoPDF.convert({
+        html: html,
+        fileName: `report`,
+        directory: 'Documents',
+      });
+
+      console.log('Original file:', file);
+
+      const destinationFolder = `${RNFS.ExternalDirectoryPath}/MyReports`; // Or use RNFS.DocumentDirectoryPath for app-private storage
+      const destinationPath = `${destinationFolder}/report_${Date.now()}.pdf`;
+
+      await RNFS.mkdir(destinationFolder);
+
+      await RNFS.moveFile(file.filePath, destinationPath);
+
+      console.log('PDF saved to:', destinationPath);
+      ToastAndroid.show('Report Downloaded Successfully', ToastAndroid.SHORT);
+    } catch (error) {
+      console.error('Error generating or saving PDF:', error);
+    }
   };
 
   return (
@@ -184,7 +210,7 @@ const BusinessReportDashboard = () => {
               flexDirection: 'row',
               gap: 10,
             }}
-            onPress={handleReportGeration}>
+            onPress={handleReportGeneration}>
             {isDownloading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
