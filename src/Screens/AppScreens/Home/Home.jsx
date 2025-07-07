@@ -37,7 +37,10 @@ const Home = () => {
   // Selected State
   const [selectedSales, setSelectedSales] = React.useState('DAY');
   const [sharableInvoices, setSharableInvoices] = useState(null);
-  const [salesOverview, setSalesOverview] = useState({});
+  const [salesOverview, setSalesOverview] = useState({
+    labels: [],
+    datasets: [{data: []}]
+  });
   const [total, setTotal] = useState(0);
   const [totalPercentage, setTotalPercentage] = useState(0);
 
@@ -45,6 +48,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [isReportLoading, setIsLoadingReport] = useState(false);
+  const [error, setError] = useState(null);
 
   // Ref States
   const bottomSheetRef = useRef(null);
@@ -52,14 +56,17 @@ const Home = () => {
   const fetchInvoices = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const data = await invoiceService.getInvoice({
         authToken: authToken,
         pageNo: 0,
         pageSize: 10,
       });
-      setInvoices(data);
+      setInvoices(data || []);
     } catch (error) {
       console.error(error);
+      setError('Failed to load invoices');
+      setInvoices([]);
     } finally {
       setIsLoading(false);
     }
@@ -68,10 +75,23 @@ const Home = () => {
   const fetchSalesOverview = async () => {
     try {
       setIsChartLoading(true);
+      setError(null);
       const data = await invoiceService.getSalesOverview({
         authtToken: authToken,
         type: selectedSales,
       });
+      
+      if (!data || !data.dataSet) {
+        setSalesOverview({
+          labels: [],
+          datasets: [{data: []}]
+        });
+        setTotal(0);
+        setTotalPercentage(0);
+        return;
+      }
+
+      let sortedDataSet = [...data.dataSet];
       if (selectedSales === 'WEEK') {
         const dayOrder = [
           'SUNDAY',
@@ -83,26 +103,27 @@ const Home = () => {
           'SATURDAY',
         ];
 
-        // Sort the dataset by day order
-        data.dataSet.sort((a, b) => {
+        sortedDataSet.sort((a, b) => {
           return dayOrder.indexOf(a.label) - dayOrder.indexOf(b.label);
         });
       } else {
-        data.dataSet.sort((a, b) => Number(a.label) - Number(b.label));
+        sortedDataSet.sort((a, b) => Number(a.label) - Number(b.label));
       }
-      console.log(data);
-      const lables = new Array();
-      const dataSetData = new Array();
-      console.log(data);
-      for (let i = 0; i < data?.dataSet.length; i++) {
+
+      const lables = [];
+      const dataSetData = [];
+      
+      for (let i = 0; i < sortedDataSet.length; i++) {
         lables[i] =
           selectedSales === 'DAY'
-            ? hoursAmPm[data?.dataSet[i]?.label]
+            ? hoursAmPm[sortedDataSet[i]?.label] || sortedDataSet[i]?.label
             : selectedSales === 'WEEK'
-            ? data?.dataSet[i]?.label.slice(0, 3)
-            : data?.dataSet[i]?.label;
-        dataSetData[i] = data?.dataSet[i]?.value;
+            ? (sortedDataSet[i]?.label || '').slice(0, 3)
+            : sortedDataSet[i]?.label || '';
+            
+        dataSetData[i] = sortedDataSet[i]?.value || 0;
       }
+
       const payload = {
         labels: lables,
         datasets: [
@@ -111,12 +132,19 @@ const Home = () => {
           },
         ],
       };
+      
       setSalesOverview(payload);
-      console.log(payload);
       setTotal(data?.totalSum || 0);
       setTotalPercentage(data?.percentage || 0);
     } catch (error) {
       console.error(error);
+      setError('Failed to load sales data');
+      setSalesOverview({
+        labels: [],
+        datasets: [{data: []}]
+      });
+      setTotal(0);
+      setTotalPercentage(0);
     } finally {
       setIsChartLoading(false);
     }
@@ -129,6 +157,7 @@ const Home = () => {
           await Promise.all([fetchInvoices(), fetchSalesOverview()]);
         } catch (error) {
           console.error(error);
+          setError('Failed to load data');
         }
       };
 
@@ -137,7 +166,6 @@ const Home = () => {
   );
 
   useEffect(() => {
-    console.log(selectedSales);
     if (!isChartLoading) {
       fetchSalesOverview();
     }
@@ -149,10 +177,13 @@ const Home = () => {
       const data = await invoiceService.getReportData({
         authToken: authToken,
       });
-      const htmlTemplate = reportTemplate(data);
-      console.log(htmlTemplate);
+      if (data) {
+        const htmlTemplate = reportTemplate(data);
+        console.log(htmlTemplate);
+      }
     } catch (error) {
       console.error(error);
+      setError('Failed to generate report');
     } finally {
       setIsLoadingReport(false);
     }
@@ -169,11 +200,18 @@ const Home = () => {
         style={{flex: 1}}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}>
+        {error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
+        
         <View style={styles.topView}>
           <Text style={styles.headerText}>Sales Overview</Text>
           <View style={styles.btnSelectContainer}>
             {options.map((item, index) => (
               <TouchableOpacity
+                key={item}
                 onPress={() => setSelectedSales(item)}
                 style={[
                   styles.selectedBtnContainer,
@@ -260,7 +298,7 @@ const Home = () => {
           <View style={{marginTop: 40}}>
             <Loader />
           </View>
-        ) : (
+        ) : invoices.length > 0 ? (
           invoices.map((item, index) => (
             <InvoiceCard
               invoice={item}
@@ -271,23 +309,16 @@ const Home = () => {
               }}
             />
           ))
+        ) : (
+          <Text style={styles.noDataText}>No invoices found</Text>
         )}
-        {!isLoading && (
+        {!isLoading && invoices.length > 0 && (
           <TouchableOpacity
-            style={{
-              alignItems: 'center',
-              marginTop: 10,
-              justifyContent: 'center',
-              backgroundColor: colors.primary,
-              height: 45,
-              width: 150,
-              alignSelf: 'center',
-              marginVertical: 30,
-              borderRadius: 10
-            }} onPress={()=>{
-              navigation.navigate('Invoice')
+            style={styles.viewMoreButton}
+            onPress={() => {
+              navigation.navigate('Invoice');
             }}>
-            <Text style={{color: '#fff',fontFamily: fonts.semibold}}>View More</Text>
+            <Text style={styles.viewMoreText}>View More</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -303,7 +334,6 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     paddingHorizontal: 20,
     paddingTop: 10,
   },
@@ -363,6 +393,37 @@ const styles = StyleSheet.create({
   invoiceText: {
     fontSize: 18,
     fontFamily: fonts.bold,
+  },
+  viewMoreButton: {
+    alignItems: 'center',
+    marginTop: 10,
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    height: 45,
+    width: 150,
+    alignSelf: 'center',
+    marginVertical: 30,
+    borderRadius: 10
+  },
+  viewMoreText: {
+    color: '#fff',
+    fontFamily: fonts.semibold
+  },
+  errorContainer: {
+    backgroundColor: colors.errorBackground,
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: colors.error,
+    fontFamily: fonts.medium,
+  },
+  noDataText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontFamily: fonts.medium,
+    color: colors.textSecondary,
   },
 });
 
