@@ -58,8 +58,10 @@ const Signin = () => {
       setGoogleLogin(false);
     }
   };
+
   const googleSignIn = async () => {
     try {
+      await googleSignOut();
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
       if (response.type === 'cancelled') {
@@ -73,6 +75,15 @@ const Signin = () => {
       signInWithGoogle({email});
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const googleSignOut = async () => {
+    try {
+      await GoogleSignin.signOut();
+      // Perform any additional cleanup after sign out
+    } catch (error) {
+      console.log('Google sign out error: ', error);
     }
   };
 
