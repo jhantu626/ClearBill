@@ -1,11 +1,8 @@
 import {
   FlatList,
   Image,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useCallback, useMemo, useState} from 'react';
@@ -30,7 +27,6 @@ const Products = () => {
 
   // LOADING STATE
   const [isLoading, setIsLoading] = useState(true);
-
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -39,13 +35,15 @@ const Products = () => {
   };
 
   const fetchProducts = async () => {
+    setIsLoading(true);
     try {
       const data = await productService.getProducts({
         authToken: authToken,
       });
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.log(error);
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -57,19 +55,26 @@ const Products = () => {
     }, []),
   );
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredProducts = useMemo(() => {
+    if (!search) return products;
+    return products.filter(product => 
+      product?.name?.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [products, search]);
 
   const SearchInputHeader = useMemo(
     () => (
-          <View style={{flexDirection: 'column', gap: 10}}>
-                  <SearchInput value={search} setValue={setSearch} disable={isLoading} />
-
-            <Text style={styles.headerText}>All Products</Text>
-          </View>
-        ),
-    [search, setSearch,isLoading],
+      <View style={{flexDirection: 'column', gap: 10}}>
+        <SearchInput 
+          value={search} 
+          setValue={setSearch} 
+          disable={isLoading} 
+          placeholder="Search products..."
+        />
+        <Text style={styles.headerText}>All Products</Text>
+      </View>
+    ),
+    [search, setSearch, isLoading],
   );
 
   return (
@@ -80,33 +85,41 @@ const Products = () => {
         isAddbtn={true}
         addBtnFunction={navigateToAddProduct}
       />
-      {/* <SearchInput /> */}
+      
       <FlatList
-        data={isLoading ? [0, 1, 2, 3, 4, 5] : filteredProducts}
+        data={isLoading ? Array(6).fill(0) : filteredProducts}
         keyExtractor={(item, index) => 'Product-' + index.toString()}
         contentContainerStyle={styles.contentContainerStyle}
         ListHeaderComponent={SearchInputHeader}
         showsVerticalScrollIndicator={false}
-        renderItem={(item, index) =>
+        renderItem={({item, index}) =>
           isLoading ? (
-            <ProductCardShimmer />
+            <ProductCardShimmer key={`shimmer-${index}`} />
           ) : (
-            <ProductCard product={item.item} />
+            <ProductCard product={item} key={`product-${item?.id || index}`} />
           )
         }
         ListEmptyComponent={() => {
+          if (isLoading) return null;
+          
           return (
-            !isLoading && (
-              <View style={styles.emptyContainer}>
-                <Image
-                  style={styles.emptyImage}
-                  source={require('./../../../../assets/images/empty.webp')}
-                />
-              </View>
-            )
+            <View style={styles.emptyContainer}>
+              <Image
+                style={styles.emptyImage}
+                source={require('./../../../../assets/images/empty.webp')}
+                resizeMode="contain"
+              />
+              <Text style={styles.emptyText}>No products found</Text>
+              {search && (
+                <Text style={styles.emptySubText}>
+                  Try a different search term
+                </Text>
+              )}
+            </View>
           );
         }}
       />
+      
       <FloatingAddButton onPress={navigateToAddProduct} />
     </Layout>
   );
@@ -117,6 +130,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 20,
     paddingBottom: 80,
+    flexGrow: 1,
   },
   headerText: {
     fontSize: 18,
@@ -131,6 +145,19 @@ const styles = StyleSheet.create({
   emptyImage: {
     width: 200,
     height: 200,
+    opacity: 0.7,
+  },
+  emptyText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontFamily: fonts.medium,
+    color: '#666',
+  },
+  emptySubText: {
+    marginTop: 4,
+    fontSize: 14,
+    fontFamily: fonts.regular,
+    color: '#999',
   },
 });
 
