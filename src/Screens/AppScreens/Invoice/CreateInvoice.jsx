@@ -251,6 +251,11 @@ const CreateInvoice = () => {
     }
   };
 
+  const SearchInputHeader = useMemo(
+    () => <SearchInput value={searchQuery} setValue={setSearchQuery} />,
+    [searchQuery, setSearchQuery],
+  );
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <Layout>
@@ -352,9 +357,7 @@ const CreateInvoice = () => {
         <BottomSheetFlatList
           contentContainerStyle={styles.bottomSheetContainer}
           data={filteredItems}
-          ListHeaderComponent={() => (
-            <SearchInput value={searchQuery} setValue={setSearchQuery} />
-          )}
+          ListHeaderComponent={SearchInputHeader}
           stickyHeaderIndices={[0]}
           keyExtractor={(item, index) => index + 'selectItemKey'}
           renderItem={({item}, index) => {
