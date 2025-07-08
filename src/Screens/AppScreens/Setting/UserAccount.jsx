@@ -3,6 +3,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,8 +18,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {formatDateToMonthYear} from '../../../utils/validations';
 import {colors} from '../../../utils/colors';
 import {useAccess} from '../../../Context/AccessContext';
+import {useAuth} from '../../../Context/AuthContext';
+import {userService} from '../../../Services/UserService';
 
 const UserAccount = () => {
+  // CONTEXTS
+  const {authToken} = useAuth();
+
   // Route
   const route = useRoute();
 
@@ -26,11 +32,32 @@ const UserAccount = () => {
   const navigation = useNavigation();
 
   // Access Context
-  const {currentUserId} = useAccess();
+  const {role} = useAccess();
 
   const {user} = route.params || {user: {name: '', email: '', createdAt: ''}};
 
-  console.log('user', user);
+  console.log('user', user, role);
+
+  const removeUserFromBusiness = async () => {
+    if (role !== 'ADMIN') {
+      ToastAndroid.show('You cannot perform this action', ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      const data = await userService.removeUserFromBusiness({
+        authToken: authToken,
+        userId: user.id,
+      });
+      if (data?.status) {
+        ToastAndroid.show('User removed from business', ToastAndroid.SHORT);
+        navigation.dispatch(StackActions.replace('Users'));
+      } else {
+        ToastAndroid.show(data?.message, ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Layout>
@@ -51,13 +78,25 @@ const UserAccount = () => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.editBtn}
-          onPress={() => {
-            navigation.navigate('CreateUser', {user: user, mode: 'edit'});
-          }}>
-          <Text style={styles.editBtnText}>Edit Profile</Text>
-        </TouchableOpacity>
+        <View style={styles.btnCOntainer}>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() => {
+              navigation.navigate('CreateUser', {user: user, mode: 'edit'});
+            }}>
+            <Text style={styles.editBtnText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.editBtn,
+              {
+                backgroundColor: '#DC3545',
+              },
+            ]}
+            onPress={removeUserFromBusiness}>
+            <Text style={styles.editBtnText}>Remove</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.titleText}>Account Details</Text>
         <View style={styles.bottomContainer}>
           <View style={styles.detailsContainer}>
@@ -152,8 +191,8 @@ const styles = StyleSheet.create({
     color: '#4A739C',
   },
   editBtn: {
-    width: '100%',
-    height: 45,
+    width: '47.5%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.primary,
@@ -161,9 +200,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   editBtnText: {
-    fontSize: 16,
-    fontFamily: fonts.medium,
+    fontSize: 14,
+    fontFamily: fonts.regular,
     color: '#fff',
+  },
+  btnCOntainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 

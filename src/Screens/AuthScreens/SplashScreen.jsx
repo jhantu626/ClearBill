@@ -19,9 +19,9 @@ const SplashScreen = () => {
       useNativeDriver: false,
     }).start();
 
-    setTimeout(() => {
-      navigation.replace('Signin');
-    }, 1500);
+    // setTimeout(() => {
+    //   navigation.replace('Signin');
+    // }, 1500);
   }, []);
 
   // Interpolate the animated value to width percentage

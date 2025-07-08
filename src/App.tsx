@@ -1,5 +1,5 @@
 import {Settings, StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
@@ -37,12 +37,12 @@ const App = () => {
   const AuthStack = () => {
     return (
       <Stack.Navigator
-        initialRouteName="Splash"
+        initialRouteName="Signin"
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
         }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
+        {/* <Stack.Screen name="Splash" component={SplashScreen} /> */}
         <Stack.Screen name="Signin" component={Signin} />
         <Stack.Screen name="Otp" component={Otp} />
       </Stack.Navigator>
@@ -104,7 +104,10 @@ const App = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
         <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
-        <Stack.Screen name="BusinessReport" component={BusinessReportDashboard} />
+        <Stack.Screen
+          name="BusinessReport"
+          component={BusinessReportDashboard}
+        />
       </Stack.Navigator>
     </AccessProvider>
   );
@@ -168,7 +171,20 @@ const App = () => {
   };
 
   const AppNav = () => {
-    const {authToken} = useAuth();
+    const {authToken, isLoading} = useAuth();
+    if (isLoading) {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Splash"
+              component={SplashScreen}
+              options={{headerShown: false}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
+    }
     return (
       <NavigationContainer>
         {authToken ? <AppStack /> : <AuthStack />}

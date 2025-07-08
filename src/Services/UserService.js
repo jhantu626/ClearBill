@@ -43,22 +43,19 @@ class UserService {
       return data;
     }
   }
-  
+
   async generateOtpForUpdateUser({authToken, email}) {
     const uri = `${this.baseUrl}/user/update-user/verify/${email}`;
     try {
-      const response = await axios.get(
-        uri,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+      const response = await axios.get(uri, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
         },
-      );
+      });
       const data = await response.data;
       return data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       const data = await error.response.data;
       return data;
     }
@@ -103,8 +100,7 @@ class UserService {
   }
 
   // Update user
-  async updateUser({authToken, id, name,
-     email, phone}) {
+  async updateUser({authToken, id, name, email, phone}) {
     const uri = `${this.baseUrl}/user`;
     const payload = {
       id: id,
@@ -123,6 +119,25 @@ class UserService {
       return data;
     } catch (error) {
       const data = await error.response.data;
+      return data;
+    }
+  }
+
+  async removeUserFromBusiness({authToken, userId}) {
+    try {
+      const uri = `${this.baseUrl}/user/business/remove-business/${userId}`;
+      const response = await axios.put(
+        uri,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      const data=await response.data;
+    } catch (error) {
+      const data=await error.response.data;
       return data;
     }
   }

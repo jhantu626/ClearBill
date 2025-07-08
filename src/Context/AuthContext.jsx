@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({children}) => {
   const [authToken, setAuthToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const login = async token => {
     try {
@@ -26,10 +27,13 @@ const AuthProvider = ({children}) => {
 
   const check = async () => {
     try {
+      setIsLoading(true);
       const token = await AsyncStorage.getItem('authToken');
       setAuthToken(token);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,7 +42,7 @@ const AuthProvider = ({children}) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{authToken, login, logout}}>
+    <AuthContext.Provider value={{authToken, login, logout, isLoading}}>
       {children}
     </AuthContext.Provider>
   );
