@@ -11,6 +11,7 @@ import ChartBar from './charts/ChartBar';
 // Cards
 import ProductCard from './Cards/ProductCard';
 import UserCard from './Cards/UserCard';
+import SubscriptionCard from './Cards/SubscriptionCard';
 
 // Inputs
 import FloatingAddButton from './Buttons/FloatingAddButton';
@@ -52,5 +53,6 @@ export {
   ChartBarShimmer,
   CommonShimmerLine,
   Loader1,
-  Loader
+  Loader,
+  SubscriptionCard
 };
