@@ -4,8 +4,37 @@ import {colors} from '../../utils/colors';
 import {fonts} from '../../utils/fonts';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import RazorpayCheckout from 'react-native-razorpay';
 
 const SubscriptionCard = ({subcription}) => {
+  const onSubscribe = async () => {
+    try {
+      const options = {
+        description: `Paymenty for ${subcription.name} plan`,
+        image: require('./../../../assets/images/logo.png'),
+        currency: 'INR',
+        key: 'rzp_test_S7hkZjIJiSVaAd',
+        amount: subcription.price * 100,
+        name: 'Paymenty',
+        prefill: {
+          email: 'test@example.com',
+          contact: '9775746484',
+          name: 'Test User',
+        },
+        theme: {color: colors.primary},
+      };
+      RazorpayCheckout.open(options)
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topCOntainer}>
@@ -27,7 +56,8 @@ const SubscriptionCard = ({subcription}) => {
             backgroundColor: colors.inputBackground + 50,
           },
         ]}
-        disabled={subcription.isSelected}>
+        disabled={subcription.isSelected}
+        onPress={onSubscribe}>
         <Text style={{color: '#fff', fontSize: 14, fontFamily: fonts.medium}}>
           {subcription.isSelected ? 'Selected' : 'Select Plan'}
         </Text>

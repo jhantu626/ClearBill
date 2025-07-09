@@ -79,7 +79,7 @@ const App = () => {
   const SettingStack = () => (
     <AccessProvider>
       <Stack.Navigator
-        initialRouteName="Setting"
+        initialRouteName="Subscription"
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
