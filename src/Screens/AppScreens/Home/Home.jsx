@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -39,7 +40,7 @@ const Home = () => {
   const [sharableInvoices, setSharableInvoices] = useState(null);
   const [salesOverview, setSalesOverview] = useState({
     labels: [],
-    datasets: [{data: []}]
+    datasets: [{data: []}],
   });
   const [total, setTotal] = useState(0);
   const [totalPercentage, setTotalPercentage] = useState(0);
@@ -49,6 +50,7 @@ const Home = () => {
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [isReportLoading, setIsLoadingReport] = useState(false);
   const [error, setError] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Ref States
   const bottomSheetRef = useRef(null);
@@ -80,11 +82,11 @@ const Home = () => {
         authtToken: authToken,
         type: selectedSales,
       });
-      
+
       if (!data || !data.dataSet) {
         setSalesOverview({
           labels: [],
-          datasets: [{data: []}]
+          datasets: [{data: []}],
         });
         setTotal(0);
         setTotalPercentage(0);
@@ -112,7 +114,7 @@ const Home = () => {
 
       const lables = [];
       const dataSetData = [];
-      
+
       for (let i = 0; i < sortedDataSet.length; i++) {
         lables[i] =
           selectedSales === 'DAY'
@@ -120,7 +122,7 @@ const Home = () => {
             : selectedSales === 'WEEK'
             ? (sortedDataSet[i]?.label || '').slice(0, 3)
             : sortedDataSet[i]?.label || '';
-            
+
         dataSetData[i] = sortedDataSet[i]?.value || 0;
       }
 
@@ -132,7 +134,7 @@ const Home = () => {
           },
         ],
       };
-      
+
       setSalesOverview(payload);
       setTotal(data?.totalSum || 0);
       setTotalPercentage(data?.percentage || 0);
@@ -141,13 +143,19 @@ const Home = () => {
       setError('Failed to load sales data');
       setSalesOverview({
         labels: [],
-        datasets: [{data: []}]
+        datasets: [{data: []}],
       });
       setTotal(0);
       setTotalPercentage(0);
     } finally {
       setIsChartLoading(false);
     }
+  };
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await Promise.all([fetchInvoices(), fetchSalesOverview()]);
+    setIsRefreshing(false);
   };
 
   useFocusEffect(
@@ -199,13 +207,16 @@ const Home = () => {
       <ScrollView
         style={{flex: 1}}
         contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={[colors.primary]} />
+        }>
         {error && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
-        
+
         <View style={styles.topView}>
           <Text style={styles.headerText}>Sales Overview</Text>
           <View style={styles.btnSelectContainer}>
@@ -403,11 +414,11 @@ const styles = StyleSheet.create({
     width: 150,
     alignSelf: 'center',
     marginVertical: 30,
-    borderRadius: 10
+    borderRadius: 10,
   },
   viewMoreText: {
     color: '#fff',
-    fontFamily: fonts.semibold
+    fontFamily: fonts.semibold,
   },
   errorContainer: {
     backgroundColor: colors.errorBackground,
