@@ -24,6 +24,7 @@ import AddBusiness from './AppScreens/Setting/AddBusiness';
 import CreateUser from './AppScreens/Setting/CreateUser';
 import ValidateOtp from './AppScreens/Setting/ValidateOtp';
 import UserAccount from './AppScreens/Setting/UserAccount';
+import Subscription from './AppScreens/Setting/Subscription';
 
 export {
   SplashScreen,
@@ -41,5 +42,6 @@ export {
   UserAccount,
   ProductDetails,
   CreateInvoice,
-  BusinessReportDashboard
+  BusinessReportDashboard,
+  Subscription
 };
