@@ -159,6 +159,17 @@ const Setting = () => {
           </View>
           <Entypo name="chevron-right" size={24} />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.userMenuContainer}
+          onPress={() => navigation.navigate('Subscription')}>
+          <View>
+            <Text style={styles.textTitle}>Subscriptions</Text>
+            <Text style={styles.textDescription}>
+              Manage your subscriptions
+            </Text>
+          </View>
+          <Entypo name="chevron-right" size={24} />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
           <MaterialIcons name="logout" size={24} color="#000" />
           <Text style={styles.logoutText}>Signout</Text>

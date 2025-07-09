@@ -17,6 +17,7 @@ import {
   Setting,
   Signin,
   SplashScreen,
+  Subscription,
   UserAccount,
   Users,
   ValidateOtp,
@@ -89,6 +90,7 @@ const App = () => {
         <Stack.Screen name="CreateUser" component={CreateUser} />
         <Stack.Screen name="ValidateOtp" component={ValidateOtp} />
         <Stack.Screen name="UserAccount" component={UserAccount} />
+        <Stack.Screen name="Subscription" component={Subscription} />
       </Stack.Navigator>
     </AccessProvider>
   );
@@ -115,7 +117,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Invoice"
+        initialRouteName="Setting"
         backBehavior="history"
         screenOptions={{
           headerShown: false,
