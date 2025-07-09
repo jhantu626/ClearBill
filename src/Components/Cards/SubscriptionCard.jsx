@@ -34,7 +34,7 @@ const SubscriptionCard = ({subcription}) => {
       </TouchableOpacity>
       <View style={styles.featuresContainer}>
         {subcription.features.map((feature, index) => (
-          <View style={styles.featuresView}>
+          <View style={styles.featuresView} key={index + 'feature'}>
             {feature.has ? (
               <Octicons name="check" size={21} color={'green'} />
             ) : (
