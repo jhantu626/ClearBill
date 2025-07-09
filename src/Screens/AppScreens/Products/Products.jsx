@@ -1,6 +1,7 @@
 import {
   FlatList,
   Image,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -18,6 +19,7 @@ import {fonts} from '../../../utils/fonts';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {productService} from '../../../Services/ProductService';
 import {useAuth} from '../../../Context/AuthContext';
+import {colors} from '../../../utils/colors';
 
 const Products = () => {
   const navigation = useNavigation();
@@ -27,6 +29,8 @@ const Products = () => {
 
   // LOADING STATE
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -49,6 +53,12 @@ const Products = () => {
     }
   };
 
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    fetchProducts();
+    setIsRefreshing(false);
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchProducts();
@@ -57,18 +67,18 @@ const Products = () => {
 
   const filteredProducts = useMemo(() => {
     if (!search) return products;
-    return products.filter(product => 
-      product?.name?.toLowerCase().includes(search.toLowerCase())
+    return products.filter(product =>
+      product?.name?.toLowerCase().includes(search.toLowerCase()),
     );
   }, [products, search]);
 
   const SearchInputHeader = useMemo(
     () => (
       <View style={{flexDirection: 'column', gap: 10}}>
-        <SearchInput 
-          value={search} 
-          setValue={setSearch} 
-          disable={isLoading} 
+        <SearchInput
+          value={search}
+          setValue={setSearch}
+          disable={isLoading}
           placeholder="Search products..."
         />
         <Text style={styles.headerText}>All Products</Text>
@@ -85,7 +95,7 @@ const Products = () => {
         isAddbtn={true}
         addBtnFunction={navigateToAddProduct}
       />
-      
+
       <FlatList
         data={isLoading ? Array(6).fill(0) : filteredProducts}
         keyExtractor={(item, index) => 'Product-' + index.toString()}
@@ -101,7 +111,7 @@ const Products = () => {
         }
         ListEmptyComponent={() => {
           if (isLoading) return null;
-          
+
           return (
             <View style={styles.emptyContainer}>
               <Image
@@ -118,8 +128,15 @@ const Products = () => {
             </View>
           );
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={[colors.primary]}
+          />
+        }
       />
-      
+
       <FloatingAddButton onPress={navigateToAddProduct} />
     </Layout>
   );
