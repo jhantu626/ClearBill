@@ -232,10 +232,10 @@ const CreateInvoice = () => {
         customerName: customerName,
         customerNumber: customerMobile,
       });
-      // if (!data?.status) {
-      //   ToastAndroid.show(data?.message, ToastAndroid.LONG);
-      //   return;
-      // }
+      if (data.hasOwnProperty('status') && data.status === false) {
+        ToastAndroid.show(data?.message, ToastAndroid.LONG);
+        return;
+      }
       await printBill(data);
       console.log(printableTemplate(data));
       ToastAndroid.show('Invoice Created Successfully', ToastAndroid.LONG);

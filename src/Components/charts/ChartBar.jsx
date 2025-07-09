@@ -13,6 +13,7 @@ const ChartBar = ({data}) => {
       width={Dimensions.get('window').width - 32} // subtract left and right margins
       height={220}
       yAxisLabel="₹"
+      verticalLabelRotation={-45}
       chartConfig={{
         backgroundColor: '#fff',
         backgroundGradientFrom: '#fff',
@@ -30,6 +31,7 @@ const ChartBar = ({data}) => {
         },
         propsForLabels: {
           fontSize: 12,
+          textAnchor: 'middle'
         },
         fillShadowGradient: colors.primary,
         fillShadowGradientOpacity: 1,

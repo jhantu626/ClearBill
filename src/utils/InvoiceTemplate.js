@@ -220,7 +220,11 @@ const invoicePDFTemplate = invoice => {
   const logoImage = invoice.business.logo
     ? `<img src="${FILE_URL+"/business/logo/"+invoice.business.logo}" alt="logo" style="height:25mm; max-width:100%;">`
     : '<div style="height:25mm; background:#eee; display:flex; align-items:center; justify-content:center;">No Logo</div>';
-  console.log(logoImage);
+
+  const barcodeValue = `${invoice.name}-${invoice.id}`;
+  // SVG placeholder for barcode
+  const barcodeSVG = `<svg id="barcode" style="display:block; margin:10px auto 0; height:30mm;"></svg>`;
+
   const itemRow = invoice.items
     .map((item, index) => {
       const totalPrice = item.price * item.quantity;
@@ -250,91 +254,22 @@ const invoicePDFTemplate = invoice => {
   <meta charset="UTF-8">
   <title>Invoice - ${invoice.business.name}</title>
   <style>
-    @page { 
-      size: A4;
-      margin: 15mm; /* Standard A4 print margins */
-    }
-    body { 
-      font-family: Arial, sans-serif; 
-      font-size: 12px; 
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    .a4-container {
-      width: 100%;
-      max-width: 180mm; /* 210mm (A4 width) - 15mm margins x2 */
-      margin: 0 auto;
-      padding: 5mm;
-      box-sizing: border-box;
-    }
-    .header { 
-      display: flex; 
-      justify-content: space-between; 
-      margin-bottom: 10px;
-      width: 100%;
-    }
-    .invoice-title { 
-      text-align: center; 
-      font-size: 24px; 
-      font-weight: bold; 
-      margin: 20px 0;
-      width: 100%;
-    }
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin: 10px 0;
-      table-layout: fixed;
-    }
-    th { 
-      background: #2c3e50; 
-      color: white; 
-      padding: 8px; 
-      text-align: left; 
-    }
-    td { 
-      padding: 6px; 
-      border-bottom: 1px solid #ddd;
-      word-wrap: break-word;
-    }
+    @page { size: A4; margin: 15mm; }
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0; padding: 0; }
+    .a4-container { width: 100%; max-width: 180mm; margin: 0 auto; padding: 5mm; box-sizing: border-box; }
+    .header { display: flex; justify-content: space-between; margin-bottom: 10px; width: 100%; }
+    .invoice-title { text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0 10px 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; table-layout: fixed; }
+    th { background: #2c3e50; color: white; padding: 8px; text-align: left; }
+    td { padding: 6px; border-bottom: 1px solid #ddd; word-wrap: break-word; }
     .text-right { text-align: right; }
     .text-center { text-align: center; }
-    .total-table { 
-      float: right; 
-      width: 45%; /* Relative to container */
-      margin-top: 20px; 
-    }
-    .grand-total { 
-      font-weight: bold; 
-      background: #2c3e50; 
-      color: white; 
-    }
-    .customer-box { 
-      background: #f9f9f9; 
-      padding: 10px; 
-      margin: 15px 0;
-      width: 100%;
-    }
-    .signature { 
-      margin-top: 40px; 
-      text-align: right;
-      width: 100%;
-    }
-    .signature-line { 
-      border-top: 1px solid #333; 
-      width: 200px; 
-      display: inline-block; 
-    }
-    .footer { 
-      margin-top: 30px; 
-      text-align: center; 
-      font-size: 10px; 
-      color: #777;
-      width: 100%;
-    }
-    
-    /* Column widths */
+    .total-table { float: right; width: 45%; margin-top: 20px; }
+    .grand-total { font-weight: bold; background: #2c3e50; color: white; }
+    .customer-box { background: #f9f9f9; padding: 10px; margin: 15px 0; width: 100%; }
+    .signature { margin-top: 40px; text-align: right; width: 100%; }
+    .signature-line { border-top: 1px solid #333; width: 200px; display: inline-block; }
+    .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #777; width: 100%; }
     .col-1 { width: 5%; }
     .col-2 { width: 25%; }
     .col-3 { width: 8%; }
@@ -346,29 +281,28 @@ const invoicePDFTemplate = invoice => {
     .col-9 { width: 10%; }
     .col-10 { width: 10%; }
   </style>
+  <!-- JsBarcode CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
   <div class="a4-container">
     <div class="header">
       <div style="width: 40%;">${logoImage}</div>
       <div style="width: 60%; text-align: right;">
-        <div style="font-size: 18px; font-weight: bold;">${
-          invoice.business.name
-        }</div>
+        <div style="font-size: 18px; font-weight: bold;">${invoice.business.name}</div>
         <div>${invoice.business.address}</div>
-        <div>GSTIN: ${invoice.business.gstNo || 'Not Provided'} | State Code: ${
-    invoice.business.stateCode || '-'
-  }</div>
+        <div>GSTIN: ${invoice.business.gstNo || 'Not Provided'} | State Code: ${invoice.business.stateCode || '-'}</div>
       </div>
     </div>
 
     <div class="invoice-title">BILL INVOICE</div>
+    <div style="text-align:center;">
+      ${barcodeSVG}
+    </div>
 
     <div style="display: flex; justify-content: space-between; width: 100%;">
       <div><strong>Invoice #:</strong> ${invoice.name}-${invoice.id}</div>
-      <div><strong>Date:</strong> ${new Date(
-        invoice.createdAt,
-      ).toLocaleDateString('en-IN', {
+      <div><strong>Date:</strong> ${new Date(invoice.createdAt).toLocaleDateString('en-IN', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -431,9 +365,24 @@ const invoicePDFTemplate = invoice => {
       This is a computer-generated invoice.
     </div>
   </div>
+  <script>
+    // Render the barcode after the DOM is loaded
+    window.onload = function() {
+      JsBarcode("#barcode", "${barcodeValue}", {
+        format: "CODE128",
+        lineColor: "#000",
+        width: 2,
+        height: 60,
+        displayValue: true,
+        fontSize: 16,
+        margin: 0
+      });
+    }
+  </script>
 </body>
 </html>`;
 };
+
 
 const printBill = async printableInvoice => {
   try {

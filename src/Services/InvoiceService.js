@@ -17,6 +17,7 @@ class InvoiceService {
       const data = await response.data;
       return data;
     } catch (error) {
+      console.log(error);
       const data = await error.response.data;
       return data;
     }

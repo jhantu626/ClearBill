@@ -9,6 +9,7 @@ import {
 import React, {useMemo, useRef, useState} from 'react';
 import Layout from '../../Layout/Layout';
 import {
+  Loader1,
   PrimaryDivider,
   SecondaryHeader,
   ShareBottomSheet,
@@ -25,6 +26,7 @@ import {
   printBill,
   printInvoice,
 } from '../../../utils/InvoiceTemplate';
+import Loader from '../../../Components/Loaders/Loader';
 
 const InvoiceDetails = () => {
   const route = useRoute();
@@ -33,16 +35,32 @@ const InvoiceDetails = () => {
 
   // State variables
   const [sharableInvoices, setSharableInvoices] = useState(null);
+  const [isPrintingLoading, setIsPrintingLoading] = useState(false);
+  const [isPDFPrintingLoading, setIsPDFPrintingLoading] = useState(false);
 
   // Ref States
   const bottomSheetRef = useRef(null);
 
   const handleGeneratePrint = async () => {
-    await printBill(invoice);
+    try {
+      setIsPrintingLoading(true);
+      await printBill(invoice);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsPrintingLoading(false);
+    }
   };
 
   const handlePrintPdf = async () => {
-    await printInvoice(invoice);
+    try {
+      setIsPDFPrintingLoading(true);
+      await printInvoice(invoice);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsPDFPrintingLoading(false);
+    }
   };
 
   return (
@@ -131,12 +149,27 @@ const InvoiceDetails = () => {
           <TouchableOpacity
             style={styles.btnContainer}
             onPress={handlePrintPdf}>
-            <Text style={styles.btnText}>Print PDF</Text>
+            {isPDFPrintingLoading ? (
+              <Loader1 />
+            ) : (
+              <Text style={styles.btnText}>Print PDF</Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnContainer}
-            onPress={handleGeneratePrint}>
-            <AntDesign name="printer" size={24} />
+            onPress={handleGeneratePrint}
+            disabled={isPrintingLoading}>
+            {isPrintingLoading ? (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Loader />
+              </View>
+            ) : (
+              <AntDesign name="printer" size={24} />
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnContainer}

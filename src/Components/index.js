@@ -30,6 +30,10 @@ import PrimaryDivider from './Dividers/PrimaryDivider';
 // Bottom Sheets
 import ShareBottomSheet from './BottomSheet/ShareBottomSheet';
 
+// Loader's
+import Loader from './Loaders/Loader';
+import Loader1 from './Loaders/Loader1';
+
 export {
   SecondaryHeader,
   DefaultInput,
@@ -46,5 +50,7 @@ export {
   PrimaryDivider,
   ShareBottomSheet,
   ChartBarShimmer,
-  CommonShimmerLine
+  CommonShimmerLine,
+  Loader1,
+  Loader
 };
