@@ -12,9 +12,13 @@ import {fonts} from '../../utils/fonts';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import RazorpayCheckout from 'react-native-razorpay';
+import {subscription} from '../../Services/Subscription';
+import {useAuth} from '../../Context/AuthContext';
 
-const SubscriptionCard = ({subcription}) => {
+const SubscriptionCard = ({subcription, currentSubscription}) => {
   const [loading, setLoading] = React.useState(false);
+  const {authToken} = useAuth();
+
   const onSubscribe = async () => {
     setLoading(true);
     try {
@@ -26,16 +30,21 @@ const SubscriptionCard = ({subcription}) => {
         key: 'rzp_test_S7hkZjIJiSVaAd',
         amount: subcription.price * 100,
         name: 'Paymenty',
-        prefill: {
-          email: 'test@example.com',
-          contact: '9775746484',
-          name: 'Test User',
-        },
         theme: {color: colors.primary},
       };
       RazorpayCheckout.open(options)
-        .then(data => {
+        .then(async data => {
           console.log(data);
+          const payload = {
+            price: subcription.price,
+            razorpayPaymentId: data.razorpay_payment_id,
+          };
+          const createResponse = await subscription.upgradeSubscription({
+            authToken: authToken,
+            type: subcription.name,
+            payload: payload,
+          });
+          console.log(createResponse);
         })
         .catch(error => {
           ToastAndroid.show('Payment Cancelled', ToastAndroid.SHORT);
@@ -72,7 +81,9 @@ const SubscriptionCard = ({subcription}) => {
         disabled={
           subcription.isSelected ||
           loading ||
-          subcription.tagline === 'Free Trial'
+          subcription.tagline === 'Free Trial' ||
+          currentSubscription === 'UNLIMITED' ||
+          subcription.name === 'STARTER'
         }
         onPress={onSubscribe}>
         {loading ? (

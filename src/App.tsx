@@ -79,7 +79,7 @@ const App = () => {
   const SettingStack = () => (
     <AccessProvider>
       <Stack.Navigator
-        initialRouteName="Setting"
+        initialRouteName="Subscription"
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
@@ -117,7 +117,7 @@ const App = () => {
   const AppStack = () => {
     return (
       <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName="Setting"
         backBehavior="history"
         screenOptions={{
           headerShown: false,
