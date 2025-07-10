@@ -9,20 +9,21 @@ const data = [
   {
     name: 'STARTER',
     price: 0,
-    isPopular: false,
+    tagline: 'Free Trial',
     features: [
+      {name: 'Frist 1 Months free trial', has: true},
       {name: '100 Daily Invoice Limit', has: true},
       {name: 'Basic Reporting', has: false},
       {name: 'Email Support', has: true},
       {name: '30 Days Transaction History', has: true},
       {name: '1 User Access', has: true},
     ],
-    isSelected: true,
+    isSelected: false,
   },
   {
     name: 'PRO',
     price: 99,
-    isPopular: true,
+    tagline: 'Most Popular',
     features: [
       {name: '1000 Daily Invoice', has: true},
       {name: 'Standard Advanced Reporting', has: true},
@@ -35,7 +36,7 @@ const data = [
   {
     name: 'UNLIMITED',
     price: 299,
-    isPopular: false,
+    tagline: '',
     features: [
       {name: 'Unlimited Daily Invoice Limit', has: true},
       {name: 'Customizable Advanced Reporting', has: true},

@@ -1,4 +1,11 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import {colors} from '../../utils/colors';
 import {fonts} from '../../utils/fonts';
@@ -7,11 +14,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import RazorpayCheckout from 'react-native-razorpay';
 
 const SubscriptionCard = ({subcription}) => {
+  const [loading, setLoading] = React.useState(false);
   const onSubscribe = async () => {
+    setLoading(true);
     try {
       const options = {
         description: `Paymenty for ${subcription.name} plan`,
-        image: require('./../../../assets/images/logo.png'),
+        image:
+          'https://drive.google.com/file/d/1VBY2zkoxl3rACBcim1SJeh137q7EvKIX/view?usp=sharing',
         currency: 'INR',
         key: 'rzp_test_S7hkZjIJiSVaAd',
         amount: subcription.price * 100,
@@ -28,10 +38,13 @@ const SubscriptionCard = ({subcription}) => {
           console.log(data);
         })
         .catch(error => {
+          ToastAndroid.show('Payment Cancelled', ToastAndroid.SHORT);
           console.log(error);
         });
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,9 +52,9 @@ const SubscriptionCard = ({subcription}) => {
     <View style={styles.container}>
       <View style={styles.topCOntainer}>
         <Text style={styles.text}>{subcription.name}</Text>
-        {subcription.isPopular && (
+        {subcription.tagline && (
           <View style={styles.popularContainer}>
-            <Text style={styles.popularText}>Most Popular</Text>
+            <Text style={styles.popularText}>{subcription.tagline}</Text>
           </View>
         )}
       </View>
@@ -52,15 +65,23 @@ const SubscriptionCard = ({subcription}) => {
       <TouchableOpacity
         style={[
           styles.selectPlanBtn,
-          subcription.isSelected && {
+          (subcription.isSelected || subcription.tagline === 'Free Trial') && {
             backgroundColor: colors.inputBackground + 50,
           },
         ]}
-        disabled={subcription.isSelected}
+        disabled={
+          subcription.isSelected ||
+          loading ||
+          subcription.tagline === 'Free Trial'
+        }
         onPress={onSubscribe}>
-        <Text style={{color: '#fff', fontSize: 14, fontFamily: fonts.medium}}>
-          {subcription.isSelected ? 'Selected' : 'Select Plan'}
-        </Text>
+        {loading ? (
+          <ActivityIndicator size={'small'} color={'#fff'} />
+        ) : (
+          <Text style={{color: '#fff', fontSize: 14, fontFamily: fonts.medium}}>
+            {subcription.isSelected ? 'Selected' : 'Upgrade'}
+          </Text>
+        )}
       </TouchableOpacity>
       <View style={styles.featuresContainer}>
         {subcription.features.map((feature, index) => (
