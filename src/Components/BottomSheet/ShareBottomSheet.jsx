@@ -20,7 +20,7 @@ import {invoicePDFTemplate} from '../../utils/InvoiceTemplate';
 import RNHtmltoPdf from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import Loader from '../Loaders/Loader';
-import { colors } from '../../utils/colors';
+import {colors} from '../../utils/colors';
 
 const ShareBottomSheet = ({
   ref,
@@ -41,64 +41,139 @@ const ShareBottomSheet = ({
     [],
   );
 
+  // const requestPermission = async () => {
+  //   if (Platform.OS === 'android') {
+  //     try {
+  //       const sdkInt = parseInt(Platform.constants?.Release || '29', 10);
+
+  //       // Android 13+ (API 33)
+  //       if (sdkInt >= 33) {
+  //         const permissions = [
+  //           PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+  //           PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+  //         ];
+
+  //         const granted = await PermissionsAndroid.requestMultiple(permissions);
+
+  //         const allGranted = permissions.every(
+  //           perm => granted[perm] === PermissionsAndroid.RESULTS.GRANTED,
+  //         );
+
+  //         if (!allGranted) {
+  //           Alert.alert(
+  //             'Permission Denied',
+  //             'App needs media access permissions to save/share invoices.',
+  //           );
+  //         }
+
+  //         return allGranted;
+  //       }
+
+  //       // Android 10–12
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  //       );
+
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
+
+  //       if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+  //         Alert.alert(
+  //           'Permission Required',
+  //           'Storage permission permanently denied. Enable it from settings.',
+  //           [
+  //             {text: 'Cancel', style: 'cancel'},
+  //             {text: 'Open Settings', onPress: () => Linking.openSettings()},
+  //           ],
+  //         );
+  //       } else {
+  //         Alert.alert(
+  //           'Permission Denied',
+  //           'Storage permission is required to share the invoice.',
+  //         );
+  //       }
+  //       return false;
+  //     } catch (err) {
+  //       console.warn('Permission error:', err);
+  //       return false;
+  //     }
+  //   }
+
+  //   return true; // iOS
+  // };
+
   const requestPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const sdkInt = parseInt(Platform.constants?.Release || '29', 10);
-
-        // Android 13+ (API 33)
-        if (sdkInt >= 33) {
-          const permissions = [
-            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-            PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
-          ];
-
-          const granted = await PermissionsAndroid.requestMultiple(permissions);
-
-          const allGranted = permissions.every(
-            perm => granted[perm] === PermissionsAndroid.RESULTS.GRANTED,
-          );
-
-          if (!allGranted) {
-            Alert.alert(
-              'Permission Denied',
-              'App needs media access permissions to save/share invoices.',
-            );
-          }
-
-          return allGranted;
-        }
-
-        // Android 10–12
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        );
-
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
-
-        if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-          Alert.alert(
-            'Permission Required',
-            'Storage permission permanently denied. Enable it from settings.',
-            [
-              {text: 'Cancel', style: 'cancel'},
-              {text: 'Open Settings', onPress: () => Linking.openSettings()},
-            ],
-          );
-        } else {
-          Alert.alert(
-            'Permission Denied',
-            'Storage permission is required to share the invoice.',
-          );
-        }
-        return false;
-      } catch (err) {
-        console.warn('Permission error:', err);
-        return false;
-      }
+    if (Platform.OS !== 'android') {
+      return true;
     }
 
-    return true; // iOS
+    try {
+      const sdkInt = Platform.Version;
+
+      if (sdkInt >= 33) {
+        const permissions = [
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
+        ];
+
+        const granted = await PermissionsAndroid.requestMultiple(permissions);
+
+        const allGranted = permissions.every(
+          perm => granted[perm] === PermissionsAndroid.RESULTS.GRANTED,
+        );
+
+        if (!allGranted) {
+          Alert.alert(
+            'Permission Denied',
+            'App needs media access permissions to save or share invoices.',
+          );
+        }
+
+        return allGranted;
+      }
+
+      // For Android 10-12 (API 29-32)
+      // Request both READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE for better compatibility
+      const permissions = [
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ];
+
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
+
+      const allGranted = permissions.every(
+        perm => granted[perm] === PermissionsAndroid.RESULTS.GRANTED,
+      );
+
+      if (allGranted) {
+        return true;
+      }
+
+      if (
+        permissions.some(
+          perm => granted[perm] === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN,
+        )
+      ) {
+        Alert.alert(
+          'Permission Required',
+          'Storage permission permanently denied. Enable it from settings.',
+          [
+            {text: 'Cancel', style: 'cancel'},
+            {text: 'Open Settings', onPress: () => Linking.openSettings()},
+          ],
+        );
+      } else {
+        Alert.alert(
+          'Permission Denied',
+          'Storage permission is required to share the invoice.',
+        );
+      }
+
+      return false;
+    } catch (err) {
+      console.warn('Permission error:', err);
+      return false;
+    }
   };
 
   const handleShare = async () => {
