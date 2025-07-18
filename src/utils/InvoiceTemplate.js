@@ -2,13 +2,232 @@ import {FILE_URL} from './config';
 import {convertInvoiceDate, convertInvoiceDate12Hour} from './util';
 import RNPrint from 'react-native-print';
 
+// const printableTemplate = invoice => {
+//   // Format currency values
+//   const formatCurrency = amount => {
+//     return '₹' + parseFloat(amount).toFixed(2);
+//   };
+
+//   // Generate compact item rows (max 24 chars for item name)
+//   const itemRow = invoice.items
+//     .map(
+//       item => `
+//     <tr class="item-row">
+//       <td class="item-name">${item.name.length > 24 ? item.name.slice(0, 24) + '...' : item.name}</td>
+//       <td class="item-qty">${item.quantity} ${item.unitType}</td>
+//       <td class="item-amt right">${formatCurrency(item.price * item.quantity)}</td>
+//     </tr>
+//   `,
+//     )
+//     .join('');
+
+//   const template = `<!DOCTYPE html>
+// <html>
+// <head>
+//   <meta charset="UTF-8">
+//   <title>Invoice ${invoice.id}</title>
+//   <style>
+//     /* Universal thermal printer styles */
+//     /* Based on research of common thermal printer specifications */
+//     @page {
+//       size: auto;   /* Auto detects printer width */
+//       margin: 0;    /* Remove default margins */
+//     }
+//     body {
+//       font-family: Arial, sans-serif; /* Best supported font for thermal printers */
+//       width: 100%;
+//       margin: 0 0 10px 0;
+//       padding: 1mm 2mm;
+//       font-size: 14pt; /* Increased from 9pt */
+//       line-height: 1.2; /* Adjusted for larger font */
+//     }
+//     /* Header styles */
+//     .header {
+//       text-align: center;
+//       margin-bottom: 1mm;
+//     }
+//     .business-name {
+//       font-weight: bold;
+//       font-size: 14pt; /* Increased from 11pt */
+//       margin-bottom: 0.5mm;
+//     }
+//     .business-info {
+//       font-size: 10pt; /* Increased from 8pt */
+//       line-height: 1.2;
+//     }
+//     /* Divider line */
+//     .divider {
+//       border-top: 1px solid #000;
+//       margin: 1mm 0;
+//     }
+//     /* Invoice metadata */
+//     .invoice-meta {
+//       display: flex;
+//       justify-content: space-between;
+//       margin-bottom: 1mm;
+//       font-size: 10pt; /* Increased from 8pt */
+//     }
+//     /* Customer info */
+//     .customer-info {
+//       margin: 1mm 0;
+//       font-size: 10pt; /* Increased from 8pt */
+//     }
+//     /* Table styles */
+//     table {
+//       width: 100%;
+//       border-collapse: collapse;
+//       margin: 1mm 0;
+//     }
+//     th {
+//       text-align: left;
+//       border-bottom: 1px solid #000;
+//       padding: 0.5mm 0;
+//       font-size: 10pt; /* Increased from 8pt */
+//     }
+//     td {
+//       padding: 0.5mm 0;
+//       font-size: 10pt; /* Increased from 8pt */
+//       vertical-align: top;
+//     }
+//     .item-name {
+//       width: 50%;
+//     }
+//     .item-qty {
+//       width: 25%;
+//     }
+//     .item-amt {
+//       width: 25%;
+//     }
+//     .right {
+//       text-align: right;
+//     }
+//     /* Totals section */
+//     .totals {
+//       margin-top: 1mm;
+//     }
+//     .total-row {
+//       display: flex;
+//       justify-content: space-between;
+//       margin: 0.5mm 0;
+//       font-size: 10pt; /* Increased from 8pt */
+//     }
+//     .grand-total {
+//       font-weight: bold;
+//       border-top: 1px solid #000;
+//       padding-top: 1mm;
+//       margin-top: 1mm;
+//       font-size: 11pt; /* Increased from 9pt */
+//     }
+//     /* Footer */
+//     .footer {
+//       text-align: center;
+//       margin-top: 2mm;
+//       font-size: 9pt; /* Increased from 7pt */
+//     }
+//     /* Barcode - only included if needed */
+//     .barcode-container {
+//       text-align: center;
+//       margin: 1mm 0;
+//     }
+//     .barcode {
+//       height: 20px;
+//       image-rendering: crisp-edges;
+//     }
+//     /* Print-specific styles */
+//     @media print {
+//       body {
+//         padding: 0 !important;
+//         width: 100% !important;
+//       }
+//       * {
+//         -webkit-print-color-adjust: exact;
+//         print-color-adjust: exact;
+//       }
+//     }
+//   </style>
+// </head>
+// <body>
+//   <div class="header">
+//     <div class="business-name">${invoice.business.name}</div>
+//     <div class="business-info">
+//       ${invoice.business.address}<br>
+//       ${invoice.business.gstNo ? 'GST: ' + invoice.business.gstNo : ''}
+//     </div>
+//   </div>
+  
+//   <div class="divider"></div>
+  
+//   <div class="invoice-meta">
+//     <div>
+//       <strong>Invoice:</strong> ${invoice.name}-${invoice.id}<br>
+//       <strong>Date:</strong> ${convertInvoiceDate(invoice.createdAt)}
+//     </div>
+//   </div>
+  
+//   <div class="customer-info">
+//     <div><strong>${invoice.customerName}</strong></div>
+//     <div>${invoice.customerMobile}</div>
+//   </div>
+  
+//   <div class="divider"></div>
+  
+//   <table>
+//     <thead>
+//       <tr>
+//         <th class="item-name">ITEM</th>
+//         <th class="item-qty">QTY</th>
+//         <th class="item-amt right">AMOUNT</th>
+//       </tr>
+//     </thead>
+//     <tbody>
+//       ${itemRow}
+//     </tbody>
+//   </table>
+  
+//   <div class="divider"></div>
+  
+//   <div class="totals">
+//     <div class="total-row">
+//       <span>Sub Total:</span>
+//       <span>${formatCurrency(invoice.subTotalAmount)}</span>
+//     </div>
+//     <div class="total-row">
+//       <span>Discount:</span>
+//       <span>-${formatCurrency(invoice.totalDiscount)}</span>
+//     </div>
+//     <div class="total-row">
+//       <span>Tax:</span>
+//       <span>${formatCurrency(invoice.totalGst)}</span>
+//     </div>
+//     <div class="total-row grand-total">
+//       <span>TOTAL:</span>
+//       <span>${formatCurrency(invoice.totalAmount)}</span>
+//     </div>
+//   </div>
+  
+//   <div class="footer">
+//     Thank you for your business!<br>
+//     ${invoice.business.name}
+//   </div>
+// </body>
+// </html>`;
+
+//   return template;
+// };
+
 const printableTemplate = invoice => {
-  // Format currency values
   const formatCurrency = amount => {
     return '₹' + parseFloat(amount).toFixed(2);
   };
 
-  // Generate compact item rows (max 24 chars for item name)
+  const convertInvoiceDate = dateString => {
+    const d = new Date(dateString);
+    const day = ('0' + d.getDate()).slice(-2);
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const itemRow = invoice.items
     .map(
       item => `
@@ -27,52 +246,50 @@ const printableTemplate = invoice => {
   <meta charset="UTF-8">
   <title>Invoice ${invoice.id}</title>
   <style>
-    /* Universal thermal printer styles */
-    /* Based on research of common thermal printer specifications */
     @page {
-      size: auto;   /* Auto detects printer width */
-      margin: 0;    /* Remove default margins */
+      size: auto;
+      margin: 0;
     }
     body {
-      font-family: "Courier New", monospace; /* Best supported font for thermal printers */
+      font-family: Arial, sans-serif;
       width: 100%;
-      margin: 0;
+      margin: 0 0 10px 0;
       padding: 1mm 2mm;
-      font-size: 11pt; /* Increased from 9pt */
-      line-height: 1.2; /* Adjusted for larger font */
+      font-size: 16pt;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
     }
-    /* Header styles */
     .header {
       text-align: center;
       margin-bottom: 1mm;
     }
     .business-name {
       font-weight: bold;
-      font-size: 14pt; /* Increased from 11pt */
+      font-size: 14pt;
       margin-bottom: 0.5mm;
+      letter-spacing: 0.5px;
     }
     .business-info {
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
       line-height: 1.2;
+      letter-spacing: 0.5px;
     }
-    /* Divider line */
     .divider {
       border-top: 1px solid #000;
       margin: 1mm 0;
     }
-    /* Invoice metadata */
     .invoice-meta {
       display: flex;
       justify-content: space-between;
       margin-bottom: 1mm;
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
+      letter-spacing: 0.5px;
     }
-    /* Customer info */
     .customer-info {
       margin: 1mm 0;
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
+      letter-spacing: 0.5px;
     }
-    /* Table styles */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -82,12 +299,14 @@ const printableTemplate = invoice => {
       text-align: left;
       border-bottom: 1px solid #000;
       padding: 0.5mm 0;
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
+      letter-spacing: 0.5px;
     }
     td {
       padding: 0.5mm 0;
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
       vertical-align: top;
+      letter-spacing: 0.5px;
     }
     .item-name {
       width: 50%;
@@ -101,7 +320,6 @@ const printableTemplate = invoice => {
     .right {
       text-align: right;
     }
-    /* Totals section */
     .totals {
       margin-top: 1mm;
     }
@@ -109,31 +327,23 @@ const printableTemplate = invoice => {
       display: flex;
       justify-content: space-between;
       margin: 0.5mm 0;
-      font-size: 10pt; /* Increased from 8pt */
+      font-size: 12pt;
+      letter-spacing: 0.5px;
     }
     .grand-total {
       font-weight: bold;
       border-top: 1px solid #000;
       padding-top: 1mm;
       margin-top: 1mm;
-      font-size: 11pt; /* Increased from 9pt */
+      font-size: 13pt;
+      letter-spacing: 0.5px;
     }
-    /* Footer */
     .footer {
       text-align: center;
       margin-top: 2mm;
-      font-size: 9pt; /* Increased from 7pt */
+      font-size: 11pt;
+      letter-spacing: 0.5px;
     }
-    /* Barcode - only included if needed */
-    .barcode-container {
-      text-align: center;
-      margin: 1mm 0;
-    }
-    .barcode {
-      height: 20px;
-      image-rendering: crisp-edges;
-    }
-    /* Print-specific styles */
     @media print {
       body {
         padding: 0 !important;
@@ -214,6 +424,7 @@ const printableTemplate = invoice => {
 
   return template;
 };
+
 
 const invoicePDFTemplate = invoice => {
   // Fix for logo image - use base64 or absolute URL
